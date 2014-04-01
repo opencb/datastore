@@ -1,11 +1,9 @@
 package org.opencb.datastore.mongodb;
 
+import java.util.*;
 import com.mongodb.*;
 import org.opencb.datastore.core.QueryOptions;
 import org.opencb.datastore.core.QueryResult;
-import org.opencb.datastore.core.config.DataStoreServerAddress;
-
-import java.util.*;
 
 /**
  * Created by imedina on 28/03/14.
@@ -31,7 +29,7 @@ public class MongoDBCollection {
         return queryResult;
     }
 
-    private QueryResult prepareQueryResult(Object result, Object resultType, QueryResult queryResult) {
+    private QueryResult prepareQueryResult(List result, Object resultType, QueryResult queryResult) {
         end = System.currentTimeMillis();
 
         queryResult.setResult(result);
@@ -46,7 +44,7 @@ public class MongoDBCollection {
         QueryResult queryResult = createQueryResult();
         long l = mongoDBNativeQuery.count();
         System.out.println(dbCollection.getStats());
-        return prepareQueryResult(l, Long.class, queryResult);
+        return prepareQueryResult(Arrays.asList(l), Long.class, queryResult);
     }
 
     public QueryResult distinct(String key, DBObject query) {

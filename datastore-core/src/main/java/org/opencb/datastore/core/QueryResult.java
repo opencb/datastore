@@ -1,6 +1,7 @@
 package org.opencb.datastore.core;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ public class QueryResult extends ObjectMap {
         }
     }
 
-    public QueryResult(String id, int dbTime, long numResults, Object warning, Object error, Object resultType, Object result) {
+    public QueryResult(String id, int dbTime, int numResults, Object warning, Object error, Object resultType, List result) {
         this.put("id", id);
         this.put("dbTime", dbTime);
         this.put("numResults", numResults);
@@ -53,12 +54,12 @@ public class QueryResult extends ObjectMap {
 
     private void initialize() {
         this.put("id", "");
-        this.put("dbTime", "");
-        this.put("numResults", "");
+        this.put("dbTime", -1);
+        this.put("numResults", 0);
         this.put("warning", "");
         this.put("error", "");
         this.put("resultType", "");
-        this.put("result", "");
+        this.put("result", new ArrayList<>());
     }
 
 
@@ -116,12 +117,13 @@ public class QueryResult extends ObjectMap {
     }
 
 
-    public Object getResult() {
-        return this.get("result");
+    public List getResult() {
+        return (List) this.get("result");
     }
 
-    public void setResult(Object value) {
+    public void setResult(List value) {
         this.put("result", value);
+        this.setNumResults(value.size());
     }
 
 }
