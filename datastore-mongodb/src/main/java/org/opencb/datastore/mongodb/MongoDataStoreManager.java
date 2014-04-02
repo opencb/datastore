@@ -120,11 +120,11 @@ public class MongoDataStoreManager {
                 db = mc.getDB(database);
 //db.setReadPreference(ReadPreference.secondary(new BasicDBObject("dc", "PG")));
 //db.setReadPreference(ReadPreference.primary());
-//                String user = mongoDBConfiguration.getString("username");
-//                String pass = mongoDBConfiguration.getString("password");
-//                if(!user.equals("") || !pass.equals("")){
-//                    db.authenticate(user,pass.toCharArray());
-//                }
+                String user = mongoDBConfiguration.getString("username");
+                String pass = mongoDBConfiguration.getString("password");
+                if(!user.equals("") || !pass.equals("")){
+                    db.authenticate(user, pass.toCharArray());
+                }
 
                 long t1 = System.currentTimeMillis();
                 logger.debug("MongoDataStoreManager: MongoDataStore object for database: '" + database + "' created in " + (t0 - t1) + "ms");
