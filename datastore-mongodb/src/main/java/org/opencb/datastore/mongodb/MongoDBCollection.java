@@ -1,5 +1,6 @@
 package org.opencb.datastore.mongodb;
 
+import com.google.common.collect.Lists;
 import java.util.*;
 import com.mongodb.*;
 import org.opencb.datastore.core.QueryOptions;
@@ -66,10 +67,10 @@ public class MongoDBCollection {
         return prepareQueryResult(l, BasicDBList.class, queryResult);
     }
 
-
-    protected QueryResult aggregate(Object id, List<DBObject> operations, QueryOptions options) {
+    public QueryResult aggregate(Object id, List<DBObject> operations, QueryOptions options) {
         QueryResult queryResult = createQueryResult();
-
+        AggregationOutput output = mongoDBNativeQuery.aggregate(id, operations, options);
+        queryResult.setResult(Lists.newArrayList(output.results()));
         return queryResult;
     }
 
