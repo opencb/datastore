@@ -99,17 +99,18 @@ class MongoDBNativeQuery {
 //            aggregationOutput = dbCollection.aggregate(operations);
             aggregationOutput = dbCollection.aggregate(firstOperation, restObjects);
 
-            BasicDBList list = new BasicDBList();
-            try {
-                if (aggregationOutput != null) {
-                    Iterator<DBObject> results = aggregationOutput.results().iterator();
-                    while (results.hasNext()) {
-                        list.add(results.next());
-                    }
-                }
-            } finally {
-
-            }
+            // TODO Will this be ever used?
+//            BasicDBList list = new BasicDBList();
+//            try {
+//                if (aggregationOutput != null) {
+//                    Iterator<DBObject> results = aggregationOutput.results().iterator();
+//                    while (results.hasNext()) {
+//                        list.add(results.next());
+//                    }
+//                }
+//            } finally {
+//
+//            }
         }
 
         return aggregationOutput;
@@ -121,12 +122,12 @@ class MongoDBNativeQuery {
         BasicDBObject returnFields = new BasicDBObject("_id", 0);
         if(options != null) {
             // Read and process 'exclude' field from 'options' object
-            if (options != null && options.getList("include") != null && options.getList("include").size() > 0) {
+            if (options.getList("include") != null && options.getList("include").size() > 0) {
                 for (Object field : options.getList("include")) {
                     returnFields.put(field.toString(), 1);
                 }
             } else {
-                if (options != null && options.getList("exclude") != null && options.getList("exclude").size() > 0) {
+                if (options.getList("exclude") != null && options.getList("exclude").size() > 0) {
                     for (Object field : options.getList("exclude")) {
                         returnFields.put(field.toString(), 0);
                     }
