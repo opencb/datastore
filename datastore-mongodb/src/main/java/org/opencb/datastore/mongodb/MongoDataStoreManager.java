@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class MongoDataStoreManager {
 
-    private static Map<String, MongoDataStore> mongoDataStores;
+    private static Map<String, MongoDataStore> mongoDataStores = new HashMap<>();
     private List<DataStoreServerAddress> dataStoreServerAddresses;
 
 //    private MongoDBConfiguration mongoDBConfiguration;
@@ -46,7 +46,6 @@ public class MongoDataStoreManager {
 //    }
 
     private void init() {
-        mongoDataStores = new HashMap<>();
         dataStoreServerAddresses = new ArrayList<>();
         readPreference = MongoDBConfiguration.ReadPreference.PRIMARY_PREFERRED;
         writeConcern = "";
@@ -78,8 +77,8 @@ public class MongoDataStoreManager {
 
     public MongoDataStore get(String database, MongoDBConfiguration mongoDBConfiguration) {
         if(!mongoDataStores.containsKey(database)) {
-            logger.info("MongoDataStoreManager: new MongoDataStore created");
             MongoDataStore mongoDataStore = create(database, mongoDBConfiguration);
+            logger.info("MongoDataStoreManager: new MongoDataStore created");
             mongoDataStores.put(database, mongoDataStore);
         }
         return mongoDataStores.get(database);
@@ -88,7 +87,6 @@ public class MongoDataStoreManager {
     private MongoDataStore create(String database, MongoDBConfiguration mongoDBConfiguration) {
         MongoDataStore mongoDataStore = null;
         MongoClient mc = null;
-        DB db = null;
         logger.debug("MongoDataStoreManager: creating a MongoDataStore object for database: '" + database + "' ...");
         long t0 = System.currentTimeMillis();
         if(database != null && !database.trim().equals("")) {
@@ -101,23 +99,23 @@ public class MongoDataStoreManager {
                         .connectTimeout(mongoDBConfiguration.getInt("connectTimeout", 10000))
                         .build();
 
-
-                if(dataStoreServerAddresses != null) {
-                    if(dataStoreServerAddresses.size() == 1) {
-                        mc = new MongoClient(new ServerAddress(dataStoreServerAddresses.get(0).getHost(), dataStoreServerAddresses.get(0).getPort()), mongoClientOptions);
-                    }else {
-                        List<ServerAddress> serverAddresses = new ArrayList<>(dataStoreServerAddresses.size());
-                        for(ServerAddress serverAddress: serverAddresses) {
-                            serverAddresses.add(new ServerAddress(serverAddress.getHost(), serverAddress.getPort()));
-                        }
-                        mc = new MongoClient(serverAddresses, mongoClientOptions);
+                assert(dataStoreServerAddresses != null);
+                
+                if(dataStoreServerAddresses.size() == 1) {
+                    mc = new MongoClient(new ServerAddress(dataStoreServerAddresses.get(0).getHost(), dataStoreServerAddresses.get(0).getPort()), mongoClientOptions);
+                } else {
+                    List<ServerAddress> serverAddresses = new ArrayList<>(dataStoreServerAddresses.size());
+                    for(ServerAddress serverAddress: serverAddresses) {
+                        serverAddresses.add(new ServerAddress(serverAddress.getHost(), serverAddress.getPort()));
                     }
+                    mc = new MongoClient(serverAddresses, mongoClientOptions);
                 }
+                    
 //                mc.setReadPreference(ReadPreference.secondary(new BasicDBObject("dc", "PG")));
 //                mc.setReadPreference(ReadPreference.primary());
 //                System.out.println("Replica Status: "+mc.getReplicaSetStatus());
                 logger.debug(mongoDBConfiguration.toString());
-                db = mc.getDB(database);
+                DB db = mc.getDB(database);
 //db.setReadPreference(ReadPreference.secondary(new BasicDBObject("dc", "PG")));
 //db.setReadPreference(ReadPreference.primary());
                 String user = mongoDBConfiguration.getString("username");
