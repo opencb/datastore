@@ -90,11 +90,11 @@ class MongoDBNativeQuery {
 
         // MongoDB aggregate method signature is: public AggregationOutput aggregate( DBObject firstOp, DBObject ... additionalOps)
         // so the operations array must be decomposed,
-        DBObject[] objects = (DBObject[])operations.toArray();
-        
-        DBObject firstOperation = objects[0];
-        DBObject[] restObjects = Arrays.copyOfRange(objects, 1, objects.length);
         if(operations.size() > 0) {
+            DBObject[] objects = (DBObject[])operations.toArray();
+            DBObject firstOperation = objects[0];
+            DBObject[] restObjects = Arrays.copyOfRange(objects, 1, objects.length);
+            
             // TODO Check 'options' param for 'ReadPreference'
 //            aggregationOutput = dbCollection.aggregate(operations);
             aggregationOutput = dbCollection.aggregate(firstOperation, restObjects);
