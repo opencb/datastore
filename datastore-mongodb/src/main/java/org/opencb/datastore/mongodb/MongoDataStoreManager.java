@@ -1,15 +1,15 @@
 package org.opencb.datastore.mongodb;
 
-import com.mongodb.*;
-import org.opencb.datastore.core.config.DataStoreServerAddress;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.mongodb.*;
+import org.opencb.datastore.core.config.DataStoreServerAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by imedina on 22/03/14.
@@ -116,8 +116,8 @@ public class MongoDataStoreManager {
 //                System.out.println("Replica Status: "+mc.getReplicaSetStatus());
                 logger.debug(mongoDBConfiguration.toString());
                 DB db = mc.getDB(database);
-//db.setReadPreference(ReadPreference.secondary(new BasicDBObject("dc", "PG")));
-//db.setReadPreference(ReadPreference.primary());
+//                db.setReadPreference(ReadPreference.secondary(new BasicDBObject("dc", "PG")));
+//                db.setReadPreference(ReadPreference.primary());
                 String user = mongoDBConfiguration.getString("username");
                 String pass = mongoDBConfiguration.getString("password");
                 if(!user.equals("") || !pass.equals("")){
