@@ -1,13 +1,12 @@
 package org.opencb.datastore.mongodb;
 
+import java.util.Arrays;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opencb.datastore.core.QueryOptions;
-
-import java.util.Arrays;
 
 /**
  * Created by imedina on 29/03/14.

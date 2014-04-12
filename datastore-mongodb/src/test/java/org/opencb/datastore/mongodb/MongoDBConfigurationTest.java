@@ -1,5 +1,7 @@
 package org.opencb.datastore.mongodb;
 
+import com.mongodb.DB;
+import com.mongodb.MongoClient;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,7 +23,9 @@ public class MongoDBConfigurationTest {
                 .build();
         System.out.println(mongoDBConfiguration.toJson());
 
-        MongoDataStore mongoDataStore = new MongoDataStore("", null);
+        MongoClient client = new MongoClient("localhost");
+        DB db = client.getDB("test");
 
+        MongoDataStore mongoDataStore = new MongoDataStore(client, db, mongoDBConfiguration);
     }
 }
