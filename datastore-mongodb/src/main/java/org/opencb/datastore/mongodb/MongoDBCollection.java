@@ -34,6 +34,18 @@ public class MongoDBCollection {
         end = System.currentTimeMillis();
 
         queryResult.setResult(result);
+        queryResult.setNumTotalResults(queryResult.getNumResults());
+        queryResult.setResultType(resultType);
+        queryResult.setDBTime((int)(end-start));
+
+        return queryResult;
+    }
+
+    private QueryResult prepareQueryResult(List result, Object resultType, QueryResult queryResult, int numResults) {
+        end = System.currentTimeMillis();
+
+        queryResult.setResult(result);
+        queryResult.setNumTotalResults(numResults);
         queryResult.setResultType(resultType);
         queryResult.setDBTime((int)(end-start));
 
@@ -51,33 +63,16 @@ public class MongoDBCollection {
     public QueryResult distinct(String key, DBObject query) {
         QueryResult queryResult = createQueryResult();
         List l = mongoDBNativeQuery.distinct(key, query);
-        queryResult.setNumResults(l.size());
         return prepareQueryResult(l, List.class, queryResult);
     }
 
     public QueryResult find(DBObject query, QueryOptions options) {
-        QueryResult queryResult = createQueryResult();
-        DBCursor cursor = mongoDBNativeQuery.find(query, options);
-        BasicDBList list = new BasicDBList();
-        
-        try {
-            if (cursor != null) {
-                while (cursor.hasNext()) {
-                    list.add(cursor.next());
-                }
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        
-        return prepareQueryResult(list, BasicDBList.class, queryResult);
+        return find(query, null, options);
     }
 
     public QueryResult find(DBObject query, DBObject returnFields, QueryOptions options) {
         QueryResult queryResult = createQueryResult();
-        DBCursor cursor = mongoDBNativeQuery.find(query, options);
+        DBCursor cursor = mongoDBNativeQuery.find(query, returnFields, options);
         BasicDBList list = new BasicDBList();
         
         try {
@@ -85,6 +80,15 @@ public class MongoDBCollection {
                 while (cursor.hasNext()) {
                     list.add(cursor.next());
                 }
+            
+                if (options.containsKey("limit")) {
+                    queryResult = prepareQueryResult(list, BasicDBList.class, queryResult, cursor.count());
+                } else {
+                    queryResult = prepareQueryResult(list, BasicDBList.class, queryResult);
+                }
+                
+            } else {
+                queryResult = prepareQueryResult(list, BasicDBList.class, queryResult);
             }
         } finally {
             if (cursor != null) {
@@ -92,7 +96,7 @@ public class MongoDBCollection {
             }
         }
         
-        return prepareQueryResult(list, BasicDBList.class, queryResult);
+        return queryResult;
     }
 
     public QueryResult aggregate(Object id, List<DBObject> operations, QueryOptions options) {

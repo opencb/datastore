@@ -42,10 +42,11 @@ public class QueryResult extends ObjectMap {
         }
     }
 
-    public QueryResult(String id, int dbTime, int numResults, Object warning, Object error, Object resultType, List result) {
+    public QueryResult(String id, int dbTime, int numResults, int numTotalResults, Object warning, Object error, Object resultType, List result) {
         this.put("id", id);
         this.put("dbTime", dbTime);
         this.put("numResults", numResults);
+        this.put("numTotalResults", numTotalResults);
         this.put("warning", warning);
         this.put("error", error);
         this.put("resultType", resultType);
@@ -56,6 +57,7 @@ public class QueryResult extends ObjectMap {
         this.put("id", "");
         this.put("dbTime", -1);
         this.put("numResults", 0);
+        this.put("numTotalResults", 0);
         this.put("warning", "");
         this.put("error", "");
         this.put("resultType", "");
@@ -89,7 +91,16 @@ public class QueryResult extends ObjectMap {
         this.put("numResults", value);
     }
 
+    
+    public int getNumTotalResults() {
+        return this.getInt("numTotalResults");
+    }
 
+    public void setNumTotalResults(int value) {
+        this.put("numTotalResults", value);
+    }
+    
+    
     public Object getWarning() {
         return this.get("warning");
     }
