@@ -85,6 +85,10 @@ class MongoDBNativeQuery {
         return aggregationOutput;
     }
 
+    public WriteResult insert(DBObject... object) {
+        return dbCollection.insert(object);
+    }
+
     private BasicDBObject getReturnFields(QueryOptions options) {
         // Select which fields are excluded and included in the query
         BasicDBObject returnFields = new BasicDBObject("_id", 0);

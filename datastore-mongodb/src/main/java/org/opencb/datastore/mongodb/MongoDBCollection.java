@@ -81,7 +81,7 @@ public class MongoDBCollection {
                     list.add(cursor.next());
                 }
             
-                if (options.containsKey("limit")) {
+                if (options != null && options.containsKey("limit")) {
                     queryResult = prepareQueryResult(list, BasicDBList.class, queryResult, cursor.count());
                 } else {
                     queryResult = prepareQueryResult(list, BasicDBList.class, queryResult);
@@ -103,6 +103,16 @@ public class MongoDBCollection {
         QueryResult queryResult = createQueryResult();
         AggregationOutput output = mongoDBNativeQuery.aggregate(id, operations, options);
         queryResult.setResult(Lists.newArrayList(output.results()));
+        return queryResult;
+    }
+
+    public QueryResult insert(DBObject... object) {
+        QueryResult queryResult = createQueryResult();
+        WriteResult wr = mongoDBNativeQuery.insert(object);
+        prepareQueryResult(Arrays.asList(wr), WriteResult.class, queryResult);
+        if (!wr.getLastError().ok()) {
+            queryResult.setError(wr.getLastError());
+        }
         return queryResult;
     }
 
