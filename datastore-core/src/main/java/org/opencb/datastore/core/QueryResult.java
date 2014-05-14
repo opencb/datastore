@@ -54,13 +54,13 @@ public class QueryResult extends ObjectMap {
     }
 
     private void initialize() {
-        this.put("id", "");
+        this.put("id", null);
         this.put("dbTime", -1);
         this.put("numResults", 0);
         this.put("numTotalResults", 0);
-        this.put("warning", "");
-        this.put("error", "");
-        this.put("resultType", "");
+        this.put("warning", null);
+        this.put("error", null);
+        this.put("resultType", null);
         this.put("result", new ArrayList<>());
     }
 
