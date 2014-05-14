@@ -116,6 +116,16 @@ public class MongoDBCollection {
         return queryResult;
     }
 
+    public QueryResult update(DBObject object, DBObject updates, boolean upsert, boolean multi) {
+        QueryResult queryResult = createQueryResult();
+        WriteResult wr = mongoDBNativeQuery.update(object, updates, upsert, multi);
+        prepareQueryResult(Arrays.asList(wr), WriteResult.class, queryResult);
+        if (!wr.getLastError().ok()) {
+            queryResult.setError(wr.getLastError());
+        }
+        return queryResult;
+    }
+
 
     /**
      * Create a new Native instance.  This is a convenience method, equivalent to {@code new MongoClientOptions.Native()}.

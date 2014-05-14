@@ -85,8 +85,12 @@ class MongoDBNativeQuery {
         return aggregationOutput;
     }
 
-    public WriteResult insert(DBObject... object) {
-        return dbCollection.insert(object);
+    public WriteResult insert(DBObject... objects) {
+        return dbCollection.insert(objects);
+    }
+
+    public WriteResult update(DBObject object, DBObject updates, boolean upsert, boolean multi) {
+        return dbCollection.update(object, updates, upsert, multi);
     }
 
     private BasicDBObject getReturnFields(QueryOptions options) {
