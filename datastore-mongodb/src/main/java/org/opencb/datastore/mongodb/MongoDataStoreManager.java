@@ -54,7 +54,7 @@ public class MongoDataStoreManager {
     }
 
 
-    public void addServerAddress(DataStoreServerAddress dataStoreServerAddress) {
+    public final void addServerAddress(DataStoreServerAddress dataStoreServerAddress) {
         if(dataStoreServerAddress != null) {
             if(this.dataStoreServerAddresses != null) {
                 this.dataStoreServerAddresses.add(dataStoreServerAddress);
@@ -62,7 +62,7 @@ public class MongoDataStoreManager {
         }
     }
 
-    public void addServerAddresses(List<DataStoreServerAddress> dataStoreServerAddresses) {
+    public final void addServerAddresses(List<DataStoreServerAddress> dataStoreServerAddresses) {
         if(dataStoreServerAddresses != null) {
             if(this.dataStoreServerAddresses != null) {
                 this.dataStoreServerAddresses.addAll(dataStoreServerAddresses);
