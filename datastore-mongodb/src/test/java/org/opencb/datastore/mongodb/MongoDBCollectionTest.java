@@ -23,7 +23,7 @@ public class MongoDBCollectionTest {
         mongoDataStoreManager = new MongoDataStoreManager("localhost", 27017);
         mongoDataStore = mongoDataStoreManager.get("test");
 
-        mongoDBCollection = mongoDataStore.getCollection("protein");
+//        mongoDBCollection = mongoDataStore.getCollection("protein");
     }
 
     @AfterClass
@@ -33,21 +33,21 @@ public class MongoDBCollectionTest {
 
     @Test
     public void testCount() throws Exception {
-        System.out.println(mongoDBCollection.count().getResult());
-        System.out.println(mongoDBCollection.nativeQuery().count());
+//        System.out.println(mongoDBCollection.count().getResult());
+//        System.out.println(mongoDBCollection.nativeQuery().count());
     }
 
     @Test
     public void testDistinct() throws Exception {
-        System.out.println(mongoDBCollection.distinct("name", null).getNumResults());
+//        System.out.println(mongoDBCollection.distinct("name", null).getNumResults());
 //        System.out.println(mongoDBCollection.nativeQuery().distinct("name"));
     }
 
     @Test
     public void testFind() throws Exception {
-        DBObject dbObject = new BasicDBObject("name", "STAC_HUMAN");
-        QueryOptions queryOptions = new QueryOptions("include", Arrays.asList("accession"));
-        System.out.println(mongoDBCollection.find(dbObject, queryOptions).getResult());
+//        DBObject dbObject = new BasicDBObject("name", "STAC_HUMAN");
+//        QueryOptions queryOptions = new QueryOptions("include", Arrays.asList("accession"));
+//        System.out.println(mongoDBCollection.find(dbObject, queryOptions).getResult());
 //        System.out.println(mongoDBCollection.nativeQuery().find(dbObject, null));
     }
 

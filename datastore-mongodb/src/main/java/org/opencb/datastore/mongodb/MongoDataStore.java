@@ -86,7 +86,7 @@ public class MongoDataStore {
     }
 
 
-    public void close() {
+    void close() {
         logger.info("MongoDataStore: connection closed");
         mongoClient.close();
     }

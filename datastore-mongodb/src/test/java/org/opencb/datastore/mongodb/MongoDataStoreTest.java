@@ -17,16 +17,12 @@ public class MongoDataStoreTest {
     public static void setUp() throws Exception {
         mongoDataStoreManager = new MongoDataStoreManager("localhost", 27017);
         mongoDataStore = mongoDataStoreManager.get("test");
-
         mongoDataStore.createCollection("JUnitTest");
-
-        System.out.println("setUp");
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
-        mongoDataStore.close();
-        System.out.println("close");
+        mongoDataStoreManager.close("test");
     }
 
 

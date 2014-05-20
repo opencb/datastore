@@ -80,7 +80,7 @@ public class MongoDataStoreManager {
             MongoDataStore mongoDataStore = create(database, mongoDBConfiguration);
             logger.info("MongoDataStoreManager: new MongoDataStore created");
             mongoDataStores.put(database, mongoDataStore);
-        }
+        } 
         return mongoDataStores.get(database);
     }
 
@@ -134,6 +134,13 @@ public class MongoDataStoreManager {
             logger.debug("MongoDB database is null or empty");
         }
         return mongoDataStore;
+    }
+    
+    public void close(String database) {
+        if(mongoDataStores.containsKey(database)) {
+            mongoDataStores.get(database).close();
+            mongoDataStores.remove(database);
+        }
     }
 
 

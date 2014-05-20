@@ -11,19 +11,21 @@ import org.junit.Test;
 public class MongoDataStoreManagerTest {
 
     private MongoDataStoreManager mongoDataStoreManager;
+    private MongoDataStore mongoDataStore;
 
     @Before
     public void setUp() throws Exception {
         mongoDataStoreManager = new MongoDataStoreManager("127.0.0.1", 27017);
+        mongoDataStore = mongoDataStoreManager.get("test", MongoDBConfiguration.builder().init().build());
     }
 
     @After
     public void tearDown() throws Exception {
+        mongoDataStoreManager.close("test");
     }
 
     @Test
     public void testGet() throws Exception {
-        MongoDataStore mongoDataStore = mongoDataStoreManager.get("test", MongoDBConfiguration.builder().init().build());
         Assert.assertTrue("MongoDB check connection to 'test' database failed", mongoDataStore.test());
     }
 }
