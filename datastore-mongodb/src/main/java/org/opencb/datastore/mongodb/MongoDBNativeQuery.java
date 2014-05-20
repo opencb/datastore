@@ -42,12 +42,11 @@ class MongoDBNativeQuery {
 
     public DBCursor find(DBObject query, DBObject returnFields, QueryOptions options) {
         DBCursor cursor;
-        if (returnFields != null) {
-            cursor = dbCollection.find(query, returnFields);
-        } else {
+
+        if(returnFields == null) {
             returnFields = getReturnFields(options);
-            cursor = dbCollection.find(query, returnFields);
         }
+        cursor = dbCollection.find(query, returnFields);
 
         int limit = (options != null) ? options.getInt("limit", 0) : 0;
         if (limit > 0) {

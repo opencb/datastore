@@ -95,7 +95,7 @@ public class MongoDataStoreManager {
 //            String dbPrefix = applicationProperties.getProperty(speciesVersionPrefix + ".DB", "PRIMARY_DB");
             try {
                 MongoClientOptions mongoClientOptions = new MongoClientOptions.Builder()
-                        .connectionsPerHost(mongoDBConfiguration.getInt("connectionsPerHost", 1))
+                        .connectionsPerHost(mongoDBConfiguration.getInt("connectionsPerHost", 100))
                         .connectTimeout(mongoDBConfiguration.getInt("connectTimeout", 10000))
                         .build();
 

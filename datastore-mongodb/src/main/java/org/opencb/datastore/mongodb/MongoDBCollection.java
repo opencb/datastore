@@ -41,10 +41,11 @@ public class MongoDBCollection {
         return queryResult;
     }
 
-    private QueryResult prepareQueryResult(List result, Object resultType, QueryResult queryResult, int numResults) {
+    private QueryResult prepareQueryResult(List result, Object resultType, int numResults, QueryResult queryResult) {
         end = System.currentTimeMillis();
 
         queryResult.setResult(result);
+        queryResult.setNumResults((result != null) ? result.size() : 0);
         queryResult.setNumTotalResults(numResults);
         queryResult.setResultType(resultType);
         queryResult.setDBTime((int)(end-start));
@@ -60,11 +61,25 @@ public class MongoDBCollection {
         return prepareQueryResult(Arrays.asList(l), Long.class, queryResult);
     }
 
+    public QueryResult count(DBObject query) {
+        QueryResult queryResult = createQueryResult();
+        long l = mongoDBNativeQuery.count(query);
+        return prepareQueryResult(Arrays.asList(l), Long.class, queryResult);
+    }
+
+
+    public QueryResult distinct(String key) {
+        QueryResult queryResult = createQueryResult();
+        List l = mongoDBNativeQuery.distinct(key);
+        return prepareQueryResult(l, List.class, queryResult);
+    }
+
     public QueryResult distinct(String key, DBObject query) {
         QueryResult queryResult = createQueryResult();
         List l = mongoDBNativeQuery.distinct(key, query);
         return prepareQueryResult(l, List.class, queryResult);
     }
+
 
     public QueryResult find(DBObject query, QueryOptions options) {
         return find(query, null, options);
@@ -82,7 +97,7 @@ public class MongoDBCollection {
                 }
             
                 if (options != null && options.containsKey("limit")) {
-                    queryResult = prepareQueryResult(list, BasicDBList.class, queryResult, cursor.count());
+                    queryResult = prepareQueryResult(list, BasicDBList.class, cursor.count(), queryResult);
                 } else {
                     queryResult = prepareQueryResult(list, BasicDBList.class, queryResult);
                 }
