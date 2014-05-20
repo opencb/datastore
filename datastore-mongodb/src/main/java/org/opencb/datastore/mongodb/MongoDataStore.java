@@ -5,20 +5,29 @@ import com.mongodb.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Created by imedina on 22/03/14.
+ *
+ * This class models and configure a physical connection to a specific database of a MongoDB server, notice this is
+ * different from the Java driver where all databases from a single MongoDB server share the same configuration.
+ * Therefore, different configurations can be applied to different databases.
+ *
+ * @author imedina
+ * @author cyenyxe
  */
+
 public class MongoDataStore {
 
-    private static Map<String, MongoDBCollection> mongoCollections = new HashMap<>();
+    private static Map<String, MongoDBCollection> mongoDBCollections = new HashMap<>();
 
     private MongoClient mongoClient;
     private DB db;
     private MongoDBConfiguration mongoDBConfiguration;
+
+    @Deprecated
     private String database;
 
-    protected Logger logger;
+    protected Logger logger = LoggerFactory.getLogger(MongoDataStore.class);
 
     MongoDataStore(MongoClient mongoClient, DB db, MongoDBConfiguration mongoDBConfiguration) {
         this.mongoClient = mongoClient;
@@ -28,23 +37,52 @@ public class MongoDataStore {
         init();
     }
 
+    @Deprecated
     private void init() {
         logger = LoggerFactory.getLogger(MongoDataStore.class);
     }
 
-    public MongoDBCollection getCollection(String collection) {
-        if(!mongoCollections.containsKey(collection)) {
-            MongoDBCollection mongoDBCollection = new MongoDBCollection(db.getCollection(collection));
-            mongoCollections.put(collection, mongoDBCollection);
-            logger.info("MongoDataStore: new MongoDBCollection created");
-        }
-        return mongoCollections.get(collection);
-    }
-
-
     public boolean test() {
         CommandResult commandResult = db.getStats();
         return commandResult != null && commandResult.getBoolean("ok");
+    }
+
+
+    public MongoDBCollection getCollection(String collection) {
+        if(!mongoDBCollections.containsKey(collection)) {
+            MongoDBCollection mongoDBCollection = new MongoDBCollection(db.getCollection(collection));
+            mongoDBCollections.put(collection, mongoDBCollection);
+            logger.info("MongoDataStore: new MongoDBCollection created");
+        }
+        return mongoDBCollections.get(collection);
+    }
+
+    public MongoDBCollection createCollection(String collectionName) {
+        if(!db.getCollectionNames().contains(collectionName)) {
+//            db.createCollection(collectionName, new BasicDBObject("capped", false));
+            db.createCollection(collectionName, null);
+        }
+        return getCollection(collectionName);
+    }
+
+    public void dropCollection(String collectionName) {
+        if(!db.getCollectionNames().contains(collectionName)) {
+            db.getCollection(collectionName).drop();
+            mongoDBCollections.remove(collectionName);
+        }
+    }
+
+    public List<String> getCollectionNames() {
+        Iterator<String> iterator = db.getCollectionNames().iterator();
+        List<String> list = new ArrayList<>();
+        while(iterator.hasNext()) {
+            list.add(iterator.next());
+        }
+        return list;
+    }
+
+    public Map<String, Object> getStats(String collectionName) {
+        return new HashMap<>(db.getStats());
     }
 
 
@@ -53,14 +91,13 @@ public class MongoDataStore {
         mongoClient.close();
     }
 
+
     /*
-     *
      * GETTERS, NO SETTERS ARE AVAILABLE TO MAKE THIS CLASS IMMUTABLE
-     *
      */
 
-    public static Map<String, MongoDBCollection> getMongoCollections() {
-        return mongoCollections;
+    public Map<String, MongoDBCollection> getMongoDBCollections() {
+        return mongoDBCollections;
     }
 
     public DB getDb() {

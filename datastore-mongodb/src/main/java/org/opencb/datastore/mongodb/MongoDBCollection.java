@@ -77,7 +77,7 @@ public class MongoDBCollection {
 
     public QueryResult find(DBObject query, DBObject returnFields, QueryOptions options) {
         QueryResult queryResult = createQueryResult();
-        DBCursor cursor = mongoDBNativeQuery.find(query, options);
+        DBCursor cursor = mongoDBNativeQuery.find(query, returnFields, options);
         BasicDBList list = new BasicDBList();
         
         try {
