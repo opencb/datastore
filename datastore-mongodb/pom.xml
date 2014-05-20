@@ -61,7 +61,6 @@
                     <target>1.7</target>
                         <testExcludes>
                             <exclude>**/MongoDBCollectionTest.java</exclude>
-                            <exclude>**/MongoDBConfigurationTest.java</exclude>
                         </testExcludes>
                 </configuration>
             </plugin>
