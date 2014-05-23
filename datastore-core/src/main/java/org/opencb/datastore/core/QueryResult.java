@@ -74,8 +74,8 @@ public class QueryResult extends ObjectMap {
     }
 
 
-    public Object getDBTime() {
-        return this.get("dbTime");
+    public int getDBTime() {
+        return this.getInt("dbTime");
     }
 
     public void setDBTime(int value) {
