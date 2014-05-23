@@ -28,5 +28,7 @@ public class MongoDBConfigurationTest {
         
         assertNotNull(mongoDataStore);
         assertEquals(db, mongoDataStore.getDb());
+        
+        client.close();
     }
 }
