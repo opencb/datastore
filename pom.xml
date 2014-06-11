@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
     <name>OpenCB datastore project</name>
     <description>OpenCB datastore project contains several database libs for SQL and NoSQL</description>
-
+    
     <modules>
         <module>datastore-core</module>
         <module>datastore-mongodb</module>
@@ -37,6 +37,18 @@
             <email>cyenyxe@ebi.ac.uk</email>
         </developer>
     </developers>
+
+    <scm>
+        <url>https://github.com/opencb/datastore</url>
+    </scm>
+    
+    <mailingLists>
+        <mailingList>
+            <name>OpenCB Mailing List</name>
+            <archive>https://groups.google.com/forum/#!forum/opencb</archive>
+            <post>opencb@googlegroups.com</post>
+        </mailingList>
+    </mailingLists>
 
     <properties>
         <opencb.datastore.version>0.1.0</opencb.datastore.version>
