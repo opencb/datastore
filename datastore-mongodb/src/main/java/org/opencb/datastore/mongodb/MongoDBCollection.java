@@ -1,8 +1,11 @@
 package org.opencb.datastore.mongodb;
 
 import com.google.common.collect.Lists;
-import java.util.*;
 import com.mongodb.*;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
+import org.opencb.datastore.core.ComplexTypeConverter;
 import org.opencb.datastore.core.QueryOptions;
 import org.opencb.datastore.core.QueryResult;
 
@@ -30,23 +33,26 @@ public class MongoDBCollection {
         return queryResult;
     }
 
-    private QueryResult prepareQueryResult(List result, Object resultType, QueryResult queryResult) {
-        end = System.currentTimeMillis();
-
-        queryResult.setResult(result);
-        queryResult.setNumTotalResults(queryResult.getNumResults());
-        queryResult.setResultType(resultType);
-        queryResult.setDBTime((int)(end-start));
-
-        return queryResult;
+    private QueryResult prepareQueryResult(QueryResult queryResult, List result, Class resultType, ComplexTypeConverter converter) {
+        return prepareQueryResult(queryResult, result, resultType, converter, queryResult.getNumResults());
     }
 
-    private QueryResult prepareQueryResult(List result, Object resultType, int numResults, QueryResult queryResult) {
+    private QueryResult prepareQueryResult(QueryResult queryResult, List result, Class resultType, ComplexTypeConverter converter, int numTotalResults) {
         end = System.currentTimeMillis();
 
-        queryResult.setResult(result);
+        // If a converter is provided, convert DBObjects to the requested type
+        if (converter != null) {
+            List convertedResult = new ArrayList<>(result.size());
+            for (Object o : result) {
+                convertedResult.add(converter.convertToDataModelType(o));
+            }
+            queryResult.setResult(convertedResult);
+        } else {
+            queryResult.setResult(result);
+        }
+        
         queryResult.setNumResults((result != null) ? result.size() : 0);
-        queryResult.setNumTotalResults(numResults);
+        queryResult.setNumTotalResults(numTotalResults);
         queryResult.setResultType(resultType);
         queryResult.setDBTime((int)(end-start));
 
@@ -57,35 +63,34 @@ public class MongoDBCollection {
     public QueryResult count() {
         QueryResult queryResult = createQueryResult();
         long l = mongoDBNativeQuery.count();
-        System.out.println(dbCollection.getStats());
-        return prepareQueryResult(Arrays.asList(l), Long.class, queryResult);
+        return prepareQueryResult(queryResult, Arrays.asList(l), Long.class, null);
     }
 
     public QueryResult count(DBObject query) {
         QueryResult queryResult = createQueryResult();
         long l = mongoDBNativeQuery.count(query);
-        return prepareQueryResult(Arrays.asList(l), Long.class, queryResult);
+        return prepareQueryResult(queryResult, Arrays.asList(l), Long.class, null);
     }
 
 
-    public QueryResult distinct(String key) {
-        QueryResult queryResult = createQueryResult();
-        List l = mongoDBNativeQuery.distinct(key);
-        return prepareQueryResult(l, List.class, queryResult);
+    public QueryResult distinct(String key, ComplexTypeConverter converter) {
+        return distinct(key, null, converter);
     }
 
-    public QueryResult distinct(String key, DBObject query) {
+    public QueryResult distinct(String key, DBObject query, ComplexTypeConverter converter) {
         QueryResult queryResult = createQueryResult();
         List l = mongoDBNativeQuery.distinct(key, query);
-        return prepareQueryResult(l, List.class, queryResult);
+        return prepareQueryResult(queryResult, l, 
+                converter == null ? DBObject.class : (((ParameterizedType) converter.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0]).getClass(), 
+                converter);
     }
 
 
-    public QueryResult find(DBObject query, QueryOptions options) {
-        return find(query, null, options);
+    public QueryResult find(DBObject query, QueryOptions options, ComplexTypeConverter converter) {
+        return find(query, options, converter, null);
     }
 
-    public QueryResult find(DBObject query, DBObject returnFields, QueryOptions options) {
+    public QueryResult find(DBObject query, QueryOptions options, ComplexTypeConverter converter, DBObject returnFields) {
         QueryResult queryResult = createQueryResult();
         DBCursor cursor = mongoDBNativeQuery.find(query, returnFields, options);
         BasicDBList list = new BasicDBList();
@@ -97,13 +102,19 @@ public class MongoDBCollection {
                 }
             
                 if (options != null && options.containsKey("limit")) {
-                    queryResult = prepareQueryResult(list, BasicDBList.class, cursor.count(), queryResult);
+                    queryResult = prepareQueryResult(queryResult, list, 
+                            converter == null ? DBObject.class : (((ParameterizedType) converter.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0]).getClass(), 
+                            converter, cursor.count());
                 } else {
-                    queryResult = prepareQueryResult(list, BasicDBList.class, queryResult);
+                    queryResult = prepareQueryResult(queryResult, list, 
+                            converter == null ? DBObject.class : (((ParameterizedType) converter.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0]).getClass(), 
+                            converter);
                 }
                 
             } else {
-                queryResult = prepareQueryResult(list, BasicDBList.class, queryResult);
+                queryResult = prepareQueryResult(queryResult, list, 
+                            converter == null ? DBObject.class : (((ParameterizedType) converter.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0]).getClass(), 
+                            converter);
             }
         } finally {
             if (cursor != null) {
@@ -124,7 +135,7 @@ public class MongoDBCollection {
     public QueryResult insert(DBObject... object) {
         QueryResult queryResult = createQueryResult();
         WriteResult wr = mongoDBNativeQuery.insert(object);
-        prepareQueryResult(Arrays.asList(wr), WriteResult.class, queryResult);
+        prepareQueryResult(queryResult, Arrays.asList(wr), WriteResult.class, null);
         if (!wr.getLastError().ok()) {
             queryResult.setError(wr.getLastError());
         }
@@ -134,7 +145,7 @@ public class MongoDBCollection {
     public QueryResult update(DBObject object, DBObject updates, boolean upsert, boolean multi) {
         QueryResult queryResult = createQueryResult();
         WriteResult wr = mongoDBNativeQuery.update(object, updates, upsert, multi);
-        prepareQueryResult(Arrays.asList(wr), WriteResult.class, queryResult);
+        prepareQueryResult(queryResult, Arrays.asList(wr), WriteResult.class, null);
         if (!wr.getLastError().ok()) {
             queryResult.setError(wr.getLastError());
         }
