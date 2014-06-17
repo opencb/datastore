@@ -1,7 +1,6 @@
 package org.opencb.datastore.mongodb;
 
 import com.mongodb.*;
-import java.util.Arrays;
 import java.util.List;
 import org.opencb.datastore.core.QueryOptions;
 
@@ -67,21 +66,7 @@ class MongoDBNativeQuery {
     }
 
     public AggregationOutput aggregate(Object id, List<DBObject> operations, QueryOptions options) {
-        AggregationOutput aggregationOutput = null;
-
-        // MongoDB aggregate method signature is: public AggregationOutput aggregate( DBObject firstOp, DBObject ... additionalOps)
-        // so the operations array must be decomposed,
-        if (operations.size() > 0) {
-            DBObject[] objects = (DBObject[]) operations.toArray();
-            DBObject firstOperation = objects[0];
-            DBObject[] restObjects = Arrays.copyOfRange(objects, 1, objects.length);
-
-            // TODO Check 'options' param for 'ReadPreference'
-            aggregationOutput = dbCollection.aggregate(firstOperation, restObjects);
-//            aggregationOutput = dbCollection.aggregate(operations); // TODO Change upon migration to new Mongo API
-        }
-
-        return aggregationOutput;
+        return (operations.size() > 0) ? dbCollection.aggregate(operations) : null;
     }
 
     public WriteResult insert(DBObject... objects) {
