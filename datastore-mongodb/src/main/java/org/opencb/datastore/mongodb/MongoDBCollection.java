@@ -3,8 +3,9 @@ package org.opencb.datastore.mongodb;
 import com.google.common.collect.Lists;
 import com.mongodb.*;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.opencb.datastore.core.ComplexTypeConverter;
 import org.opencb.datastore.core.QueryOptions;
 import org.opencb.datastore.core.QueryResult;
@@ -80,9 +81,17 @@ public class MongoDBCollection {
     public QueryResult distinct(String key, DBObject query, ComplexTypeConverter converter) {
         QueryResult queryResult = createQueryResult();
         List l = mongoDBNativeQuery.distinct(key, query);
-        return prepareQueryResult(queryResult, l, 
-                converter == null ? DBObject.class : (((ParameterizedType) converter.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0]).getClass(), 
-                converter);
+        try {
+            return prepareQueryResult(queryResult, l,
+                    converter == null ? DBObject.class :
+                            Class.forName((((ParameterizedType) converter.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0])
+                                    .getClass().getCanonicalName()),
+                    converter);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(MongoDBCollection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return queryResult;
     }
 
 
@@ -101,21 +110,29 @@ public class MongoDBCollection {
                     list.add(cursor.next());
                 }
             
-                if (options != null && options.containsKey("limit")) {
+                if (options != null && options.getInt("limit") > 0) {
                     queryResult = prepareQueryResult(queryResult, list, 
-                            converter == null ? DBObject.class : (((ParameterizedType) converter.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0]).getClass(), 
+                            converter == null ? DBObject.class : 
+                                    Class.forName((((ParameterizedType) converter.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0])
+                                            .getClass().getCanonicalName()), 
                             converter, cursor.count());
                 } else {
                     queryResult = prepareQueryResult(queryResult, list, 
-                            converter == null ? DBObject.class : (((ParameterizedType) converter.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0]).getClass(), 
+                            converter == null ? DBObject.class : 
+                                    Class.forName((((ParameterizedType) converter.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0])
+                                            .getClass().getCanonicalName()), 
                             converter);
                 }
                 
             } else {
                 queryResult = prepareQueryResult(queryResult, list, 
-                            converter == null ? DBObject.class : (((ParameterizedType) converter.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0]).getClass(), 
+                            converter == null ? DBObject.class : 
+                                    Class.forName((((ParameterizedType) converter.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0])
+                                            .getClass().getCanonicalName()), 
                             converter);
             }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(MongoDBCollection.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             if (cursor != null) {
                 cursor.close();
