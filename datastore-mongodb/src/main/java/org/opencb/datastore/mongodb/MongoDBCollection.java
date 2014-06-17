@@ -104,6 +104,7 @@ public class MongoDBCollection {
         QueryResult queryResult = new QueryResult();
         AggregationOutput output = mongoDBNativeQuery.aggregate(id, operations, options);
         queryResult.setResult(Lists.newArrayList(output.results()));
+        queryResult.setNumTotalResults(queryResult.getNumResults());
         return queryResult;
     }
 
