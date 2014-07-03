@@ -1,92 +1,80 @@
 package org.opencb.datastore.core;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Created by imedina on 20/03/14.
  */
-public class QueryResponse extends ObjectMap {
+public class QueryResponse<T>{
+
+    private static final long serialVersionUID = -2978952531219554024L;
+
+    private int time;
+    private String apiVersion;
+    private String warning;
+    private String error;
+
+    private QueryOptions queryOptions;
+    private List<T> response;
 
     public QueryResponse() {
-        initialize();
+        this(null, null);
     }
 
-    public QueryResponse(int size) {
-        super(size);
-        initialize();
+    public QueryResponse(QueryOptions queryOptions, List<T> response) {
+        this(queryOptions, response, null, null, -1);
     }
 
-    public QueryResponse(final String key, final Object value) {
-        initialize();
-        // We must first initialize and then put the parameters
-        this.put(key, value);
+    public QueryResponse(QueryOptions queryOptions, List<T> response, String version, String species, int time) {
+        this.apiVersion = "v2";
+        this.warning = "";
+        this.error = "";
+        this.queryOptions = queryOptions;
+        this.response = response;
+        this.time = time;
     }
 
-    public QueryResponse(final Map<String, Object> map) {
-        initialize();
-        // We must first initialize and then put the parameters
-        this.putAll(map);
+    public void setTime(int time) {
+        this.time = time;
     }
-
-    public QueryResponse(String apiVersion, int time, Object warning, Object error, Object response) {
-        this.put("apiVersion", apiVersion);
-        this.put("time", time);
-        this.put("warning", warning);
-        this.put("error", error);
-        this.put("response", response);
-    }
-
-    private void initialize() {
-        this.put("apiVersion", "");
-        this.put("time", "");
-        this.put("warning", "");
-        this.put("error", "");
-        this.put("response", "");
-    }
-
 
     public String getApiVersion() {
-        return this.getString("apiVersion", "");
+        return apiVersion;
     }
 
     public void setApiVersion(String apiVersion) {
-        this.put("apiVersion", apiVersion);
+        this.apiVersion = apiVersion;
     }
 
-
-    public int getTime() {
-        return this.getInt("time", -1);
+    public String getWarning() {
+        return warning;
     }
 
-    public void setDbVersion(int time) {
-        this.put("time", time);
+    public void setWarning(String warning) {
+        this.warning = warning;
     }
 
-
-    public Object getWarning() {
-        return this.get("warning");
+    public String getError() {
+        return error;
     }
 
-    public void setWarning(Object value) {
-        this.put("warning", value);
+    public void setError(String error) {
+        this.error = error;
     }
 
-
-    public Object getError() {
-        return this.get("error");
+    public QueryOptions getQueryOptions() {
+        return queryOptions;
     }
 
-    public void setError(Object value) {
-        this.put("error", value);
+    public void setQueryOptions(QueryOptions queryOptions) {
+        this.queryOptions = queryOptions;
     }
 
-
-    public Object getResponse() {
-        return this.get("response");
+    public List<T> getResponse() {
+        return response;
     }
 
-    public void setResponse(Object value) {
-        this.put("response", value);
+    public void setResponse(List<T> response) {
+        this.response = response;
     }
-
 }
