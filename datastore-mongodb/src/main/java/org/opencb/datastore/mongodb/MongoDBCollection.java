@@ -30,12 +30,12 @@ public class MongoDBCollection {
     private QueryResult endQuery(List result, Object resultType) {
         end = System.currentTimeMillis();
         int numResults = (result != null) ? result.size() : 0;
-        return new QueryResult(null, (int) (end-start), numResults, numResults, null, null, resultType, result);
+        return new QueryResult(null, (int) (end-start), numResults, numResults, null, null, result);
     }
     
     private QueryResult endQuery(List result, Object resultType, int numResults) {
         end = System.currentTimeMillis();
-        return new QueryResult(null, (int) (end-start), (result != null) ? result.size() : 0, numResults, null, null, resultType, result);
+        return new QueryResult(null, (int) (end-start), (result != null) ? result.size() : 0, numResults, null, null, result);
     }
     
     public QueryResult count() {
@@ -113,7 +113,7 @@ public class MongoDBCollection {
         WriteResult wr = mongoDBNativeQuery.insert(object);
         QueryResult queryResult = endQuery(Arrays.asList(wr), WriteResult.class);
         if (!wr.getLastError().ok()) {
-            queryResult.setError(wr.getLastError());
+            queryResult.setErrorMsg(wr.getLastError().getErrorMessage());
         }
         return queryResult;
     }
@@ -123,7 +123,7 @@ public class MongoDBCollection {
         WriteResult wr = mongoDBNativeQuery.update(object, updates, upsert, multi);
         QueryResult queryResult = endQuery(Arrays.asList(wr), WriteResult.class);
         if (!wr.getLastError().ok()) {
-            queryResult.setError(wr.getLastError());
+            queryResult.setErrorMsg(wr.getLastError().getErrorMessage());
         }
         return queryResult;
     }

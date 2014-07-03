@@ -66,8 +66,8 @@ public class HBaseTable {
         end = System.currentTimeMillis();
 
         queryResult.setResult(result);
-        queryResult.setResultType(resultType);
-        queryResult.setDBTime((int)(end-start));
+        queryResult.setResultType(resultType.getClass().getCanonicalName());
+        queryResult.setDbTime((int)(end-start));
 
         return queryResult;
     }
@@ -79,7 +79,7 @@ public class HBaseTable {
             queryResult = prepareQueryResult(Arrays.asList(l), Long.class, queryResult);
         } catch (Throwable ex) {
             queryResult = prepareQueryResult(null, Long.class, queryResult);
-            queryResult.setError(ex.getMessage());
+            queryResult.setErrorMsg(ex.getMessage());
         }
         return queryResult;
     }
