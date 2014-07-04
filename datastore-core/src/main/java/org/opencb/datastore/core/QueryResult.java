@@ -1,140 +1,133 @@
 package org.opencb.datastore.core;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by imedina on 20/03/14.
  */
-public class QueryResult extends ObjectMap {
+public class QueryResult<T> {
+    private String id;
+    private int dbTime;
+    private int numResults;
+    private int numTotalResults;
+    private String warningMsg;
+    private String errorMsg;
+    private String resultType;
+    private List<T> result;
 
 
     public QueryResult() {
-        initialize();
+        this("", -1, -1, -1, "", "", new ArrayList<T>());
     }
 
-    public QueryResult(int size) {
-        super(size);
-        initialize();
+    public QueryResult(String id) {
+        this(id, -1, -1, -1, "", "", new ArrayList<T>());
     }
 
-    public QueryResult(final String key, final Object value) {
-        initialize();
-        // We must first initialize and then put the parameters
-        this.put(key, value);
+    public QueryResult(String id, int dbTime, int numResults, int numTotalResults, String warningMsg, String errorMsg, List<T> result) {
+        this.id = id;
+        this.dbTime = dbTime;
+        this.numResults = numResults;
+        this.numTotalResults = numTotalResults;
+        this.warningMsg = warningMsg;
+        this.errorMsg = errorMsg;
+        this.resultType = result.size() > 0 ? result.get(0).getClass().getCanonicalName() : "";
+        this.result = result;
     }
-
-    public QueryResult(final Map<String, Object> map) {
-        initialize();
-        // We must first initialize and then put the parameters
-        this.putAll(map);
-    }
-
-    public QueryResult(String json) {
-        initialize();
-        // We must first initialize and then put the parameters
-        try {
-            this.putAll(jsonObjectMapper.readValue(json, this.getClass()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public QueryResult(String id, int dbTime, int numResults, int numTotalResults, Object warning, Object error, Object resultType, List result) {
-        this.put("id", id);
-        this.put("dbTime", dbTime);
-        this.put("numResults", numResults);
-        this.put("numTotalResults", numTotalResults);
-        this.put("warning", warning);
-        this.put("error", error);
-        this.put("resultType", resultType);
-        this.put("result", result);
-    }
-
-    private void initialize() {
-        this.put("id", null);
-        this.put("dbTime", -1);
-        this.put("numResults", 0);
-        this.put("numTotalResults", 0);
-        this.put("warning", null);
-        this.put("error", null);
-        this.put("resultType", null);
-        this.put("result", new ArrayList<>());
-    }
-
 
     public String getId() {
-        return this.getString("id");
+        return id;
     }
 
     public void setId(String id) {
-        this.put("id", id);
+        this.id = id;
     }
 
-
-    public int getDBTime() {
-        return this.getInt("dbTime");
+    public int getDbTime() {
+        return dbTime;
     }
 
-    public void setDBTime(int value) {
-        this.put("dbTime", value);
+    public void setDbTime(int dbTime) {
+        this.dbTime = dbTime;
     }
-
 
     public int getNumResults() {
-        return this.getInt("numResults");
+        return numResults;
     }
 
-    public void setNumResults(int value) {
-        this.put("numResults", value);
+    public void setNumResults(int numResults) {
+        this.numResults = numResults;
     }
 
-    
+    public String getWarningMsg() {
+        return warningMsg;
+    }
+
+    public void setWarningMsg(String warningMsg) {
+        this.warningMsg = warningMsg;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
+
+    public String getResultType() {
+        return resultType;
+    }
+
+    public void setResultType(String resultType) {
+        this.resultType = resultType;
+    }
+
+    public List<T> getResult() {
+        return result;
+    }
+
+    public void setResult(List<T> result) {
+        if (result.size() > 0) {
+            this.resultType = result.get(0).getClass().getCanonicalName();
+        }
+        this.numResults = result.size();
+        this.result = result;
+    }
+
+    public void addResult(T result) {
+        this.resultType = result.getClass().getCanonicalName();
+        this.result.add(result);
+        this.numResults = this.result.size();
+    }
+
+    public void addAllResults(List<T> result) {
+        if (result.size() > 0) {
+            this.resultType = result.get(0).getClass().getCanonicalName();
+        }
+        this.result.addAll(result);
+        this.numResults = this.result.size();
+    }
+
+    @Override
+    public String toString() {
+        return "QueryResult{\n" +
+                "id='" + id + '\'' + "\n" +
+                ", dbTime=" + dbTime + "\n" +
+                ", numResults=" + numResults + "\n" +
+                ", warningMsg='" + warningMsg + '\'' + "\n" +
+                ", errorMsg='" + errorMsg + '\'' + "\n" +
+                ", resultType='" + resultType + '\'' + "\n" +
+                ", result=" + result + "\n" +
+                '}';
+    }
+
     public int getNumTotalResults() {
-        return this.getInt("numTotalResults");
+        return numTotalResults;
     }
 
-    public void setNumTotalResults(int value) {
-        this.put("numTotalResults", value);
+    public void setNumTotalResults(int numTotalResults) {
+        this.numTotalResults = numTotalResults;
     }
-    
-    
-    public Object getWarning() {
-        return this.get("warning");
-    }
-
-    public void setWarning(Object value) {
-        this.put("warning", value);
-    }
-
-
-    public Object getError() {
-        return this.get("error");
-    }
-
-    public void setError(Object value) {
-        this.put("error", value);
-    }
-
-
-    public int getResultType() {
-        return this.getInt("resultType");
-    }
-
-    public void setResultType(Object value) {
-        this.put("resultType", value);
-    }
-
-
-    public List getResult() {
-        return (List) this.get("result");
-    }
-
-    public void setResult(List value) {
-        this.put("result", value);
-        this.setNumResults(value.size());
-    }
-
 }

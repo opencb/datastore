@@ -46,6 +46,7 @@ public class QueryOptions extends ObjectMap {
     /**
      * This method safely add new options. If the key already exists it does not overwrite the current value.
      * You can use put for overwritten the value.
+     *
      * @param key
      * @param value
      * @return null if the key was not present, or the existing object if the key exists.
@@ -60,48 +61,20 @@ public class QueryOptions extends ObjectMap {
 
     /**
      * This method safely add a new Object to an exiting option which type is List.
+     *
      * @param key
      * @param value
      * @return the list with the new Object inserted.
      */
     public Object addToListOption(String key, Object value) {
-        if(key != null && !key.equals("")) {
-            if(this.containsKey(key) && this.getList(key) != null) {
+        if (key != null && !key.equals("")) {
+            if (this.containsKey(key) && this.getList(key) != null) {
                 this.getList(key).add(value);
-            }else {
+            } else {
                 this.put(key, Arrays.asList(value));
             }
             return this.getList(key);
         }
         return null;
     }
-
-
-//    public QueryOptions addIncludeReturnFields(String returnField, QueryOptions options) {
-//        if (options != null ) { //&& !options.getBoolean(returnField, true)
-//            if (options.getList("include") != null) {
-//                options.getList("include").add(returnField);
-//            } else {
-//                options.put("include", Arrays.asList(returnField));
-//            }
-//        }else {
-//            options = new QueryOptions("include", Arrays.asList(returnField));
-//        }
-//        return options;
-//    }
-//
-//    public QueryOptions addExcludeReturnFields(String returnField, QueryOptions options) {
-//        if (options != null && !options.getBoolean(returnField, true)) {
-//            if (options.getList("exclude") != null) {
-//                options.getList("exclude").add(returnField);
-//            } else {
-//                options.put("exclude", Arrays.asList(returnField));
-//            }
-//        }else {
-//            options = new QueryOptions("exclude", Arrays.asList(returnField));
-//        }
-//        return options;
-//    }
-
-
 }
