@@ -6,7 +6,7 @@
 
     <groupId>org.opencb.datastore</groupId>
     <artifactId>datastore</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 
     <packaging>pom</packaging>
     <name>OpenCB datastore project</name>
@@ -51,7 +51,7 @@
     </mailingLists>
 
     <properties>
-        <opencb.datastore.version>0.1.0</opencb.datastore.version>
+        <opencb.datastore.version>0.2.0</opencb.datastore.version>
         <compileSource>1.7</compileSource>
     </properties>
 
