@@ -7,16 +7,28 @@
     <groupId>org.opencb.datastore</groupId>
     <artifactId>datastore</artifactId>
     <version>0.2.0</version>
-
     <packaging>pom</packaging>
+
     <name>OpenCB datastore project</name>
     <description>OpenCB datastore project contains several database libs for SQL and NoSQL</description>
-    
+    <url>https://github.com/opencb/datastore/wiki</url>
+
     <modules>
         <module>datastore-core</module>
         <module>datastore-mongodb</module>
         <module>datastore-hbase</module>
     </modules>
+
+    <properties>
+        <opencb.datastore.version>0.2.0</opencb.datastore.version>
+        <compileSource>1.7</compileSource>
+    </properties>
+
+    <scm>
+        <url>https://github.com/opencb/datastore</url>
+        <connection>scm:git:git://github.com/opencb/datastore.git</connection>
+        <developerConnection>scm:git:git@github.com:opencb/datastore.git</developerConnection>
+    </scm>
 
     <licenses>
         <license>
@@ -29,7 +41,7 @@
         <developer>
             <id>imedina</id>
             <name>Nacho</name>
-            <email>imedina@ebi.ac.uk</email>
+            <email>igmecas@gmail.com</email>
         </developer>
         <developer>
             <id>cyenyxe</id>
@@ -38,10 +50,6 @@
         </developer>
     </developers>
 
-    <scm>
-        <url>https://github.com/opencb/datastore</url>
-    </scm>
-    
     <mailingLists>
         <mailingList>
             <name>OpenCB Mailing List</name>
@@ -49,11 +57,6 @@
             <post>opencb@googlegroups.com</post>
         </mailingList>
     </mailingLists>
-
-    <properties>
-        <opencb.datastore.version>0.2.0</opencb.datastore.version>
-        <compileSource>1.7</compileSource>
-    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -146,6 +149,32 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <executions>
                     <execution>
@@ -157,7 +186,29 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.2</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
     
 </project>
