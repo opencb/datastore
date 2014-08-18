@@ -9,8 +9,8 @@ import org.junit.Test;
 /**
  * Created by imedina on 25/03/14.
  * 
- * @author Ignacio Medina Castelo <imedina@ebi.ac.uk>
- * @author Cristina Yenyxe Gonzalez Garcia <cyenyxe@ebi.ac.uk>
+ * @author Ignacio Medina Castelo &lt;imedina@ebi.ac.uk&gt;
+ * @author Cristina Yenyxe Gonzalez Garcia &lt;cyenyxe@ebi.ac.uk&gt;
  */
 public class MongoDBConfigurationTest {
 
