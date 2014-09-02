@@ -120,7 +120,7 @@ public class MongoDataStoreManager {
 //                db.setReadPreference(ReadPreference.primary());
                 String user = mongoDBConfiguration.getString("username", "");
                 String pass = mongoDBConfiguration.getString("password", "");
-                if(!user.equals("") || !pass.equals("")){
+                if((user != null && !user.equals("")) || (pass != null && !pass.equals(""))) {
                     db.authenticate(user, pass.toCharArray());
                 }
 
