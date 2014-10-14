@@ -6,7 +6,7 @@ import org.opencb.datastore.core.ObjectMap;
 
 /**
  *
- * @author Cristina Yenyxe Gonzalez Garcia <cyenyxe@ebi.ac.uk>
+ * @author Cristina Yenyxe Gonzalez Garcia &lt;cyenyxe@ebi.ac.uk&gt;
  */
 public class HBaseConfiguration extends ObjectMap {
     

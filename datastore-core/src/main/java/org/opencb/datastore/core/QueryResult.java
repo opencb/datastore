@@ -8,11 +8,13 @@ import java.util.List;
  */
 public class QueryResult<T> {
     private String id;
+    @Deprecated private int time;
     private int dbTime;
     private int numResults;
     private int numTotalResults;
     private String warningMsg;
     private String errorMsg;
+    @Deprecated private String featureType;
     private String resultType;
     private List<T> result;
 
@@ -42,6 +44,16 @@ public class QueryResult<T> {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Deprecated
+    public int getTime() {
+        return time;
+    }
+
+    @Deprecated
+    public void setTime(int time) {
+        this.time = time;
     }
 
     public int getDbTime() {
@@ -74,6 +86,16 @@ public class QueryResult<T> {
 
     public void setErrorMsg(String errorMsg) {
         this.errorMsg = errorMsg;
+    }
+
+    @Deprecated
+    public String getFeatureType() {
+        return featureType;
+    }
+
+    @Deprecated
+    public void setFeatureType(String featureType) {
+        this.featureType = featureType;
     }
 
     public String getResultType() {

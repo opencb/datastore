@@ -16,7 +16,7 @@ import org.opencb.datastore.core.QueryOptions;
 
 /**
  *
- * @author Cristina Yenyxe Gonzalez Garcia <cyenyxe@ebi.ac.uk>
+ * @author Cristina Yenyxe Gonzalez Garcia &lt;cyenyxe@ebi.ac.uk&gt;
  */
 public class HBaseNativeQuery {
     
@@ -80,7 +80,7 @@ public class HBaseNativeQuery {
      * @param options
      * @return
      * @throws IOException 
-     * @see https://stackoverflow.com/questions/17981450/row-pagination-with-hbase for instructions on how to perform pagination in HBase
+     * @see <a href="https://stackoverflow.com/questions/17981450/row-pagination-with-hbase">Instructions on how to perform pagination in HBase</a>
      */
     public Iterator<Result> find(String startRow, String endRow, List<String> returnFields, QueryOptions options) throws IOException {
         Scan scan = new Scan(startRow.getBytes(), endRow.getBytes());

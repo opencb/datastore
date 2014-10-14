@@ -8,8 +8,8 @@ import org.opencb.datastore.core.QueryOptions;
 import org.opencb.datastore.core.QueryResult;
 
 /**
- * @author Ignacio Medina <imedina@ebi.ac.uk>
- * @author Cristina Yenyxe Gonzalez Garcia <cyenyxe@ebi.ac.uk>
+ * @author Ignacio Medina &lt;imedina@ebi.ac.uk&gt;
+ * @author Cristina Yenyxe Gonzalez Garcia &lt;cyenyxe@ebi.ac.uk&gt;
  */
 public class MongoDBCollection {
 
