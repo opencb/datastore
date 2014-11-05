@@ -6,7 +6,7 @@
 
     <groupId>org.opencb.datastore</groupId>
     <artifactId>datastore</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
     <packaging>pom</packaging>
 
     <name>OpenCB datastore project</name>
@@ -20,7 +20,7 @@
     </modules>
 
     <properties>
-        <opencb.datastore.version>0.2.0</opencb.datastore.version>
+        <opencb.datastore.version>0.3.0</opencb.datastore.version>
         <compileSource>1.7</compileSource>
     </properties>
 
@@ -74,7 +74,7 @@
             <dependency>
                 <groupId>org.mongodb</groupId>
                 <artifactId>mongo-java-driver</artifactId>
-                <version>2.12.1</version>
+                <version>2.12.4</version>
                 <!--<version>2.11.4</version>-->
                 <optional>true</optional>
             </dependency>
@@ -99,17 +99,17 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.6</version>
+                <version>1.7.7</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
-                <version>1.7.6</version>
+                <version>1.7.7</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.3.2</version>
+                <version>2.3.4</version>
             </dependency>
             <dependency>
                 <groupId>com.google.protobuf</groupId>
