@@ -1,12 +1,16 @@
 package org.opencb.datastore.mongodb;
 
-import java.util.Arrays;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opencb.datastore.core.QueryOptions;
+import org.opencb.datastore.core.QueryResult;
+import org.opencb.datastore.core.QueryResultWriter;
 
 /**
  * Created by imedina on 29/03/14.
@@ -15,13 +19,15 @@ public class MongoDBCollectionTest {
 
     private static MongoDataStoreManager mongoDataStoreManager;
     private static MongoDataStore mongoDataStore;
-    private static MongoDBCollection mongoDBCollection;
+//    private static MongoDBCollection mongoDBCollection;
+    private static MongoDBCollection mongoDBCollectionTest;
 
 
     @BeforeClass
     public static void setUp() throws Exception {
         mongoDataStoreManager = new MongoDataStoreManager("localhost", 27017);
         mongoDataStore = mongoDataStoreManager.get("test");
+        mongoDBCollectionTest = mongoDataStore.getCollection("test");
 
 //        mongoDBCollection = mongoDataStore.getCollection("protein");
     }
@@ -29,6 +35,53 @@ public class MongoDBCollectionTest {
     @AfterClass
     public static void tearDown() throws Exception {
         mongoDataStore.close();
+    }
+
+    class BasicQueryResultWriter implements QueryResultWriter<DBObject> {
+        int i = 0;
+        String outfile = "/tmp/queryResultWriter.log";
+        DataOutputStream fileOutputStream;
+
+        @Override
+        public void open() throws IOException {
+            System.out.println("Opening!");
+            this.fileOutputStream = new DataOutputStream(new FileOutputStream(outfile));
+        }
+
+        @Override
+        public void write(DBObject elem) throws IOException {
+            String s = String.format("Result %d : %s\n", i++, elem.toString());
+            System.out.printf(s);
+            fileOutputStream.writeBytes(s);
+        }
+
+        @Override
+        public void close() throws IOException {
+            System.out.println("Closing!");
+            fileOutputStream.close();
+        }
+    }
+
+    @Test
+    public void testQueryResultWriter() throws Exception {
+
+        for (int i = 0; i < 100; i++) {
+            mongoDBCollectionTest.insert(new BasicDBObject("id", i));
+        }
+
+        BasicQueryResultWriter queryResultWriter = new BasicQueryResultWriter();
+        mongoDBCollectionTest.setQueryResultWriter(queryResultWriter);
+        QueryResult<DBObject> dbObjectQueryResult = mongoDBCollectionTest.find(new BasicDBObject("id", new BasicDBObject("$gt", 50)), null, null);
+        System.out.println(dbObjectQueryResult);
+        assert (dbObjectQueryResult.getResult().isEmpty());
+
+        mongoDBCollectionTest.setQueryResultWriter(null);
+        dbObjectQueryResult = mongoDBCollectionTest.find(new BasicDBObject("id", new BasicDBObject("$gt", 50)), null, null);
+        System.out.println(dbObjectQueryResult);
+        assert (!dbObjectQueryResult.getResult().isEmpty());
+
+        mongoDataStore.dropCollection("test");
+
     }
 
     @Test

@@ -2,10 +2,13 @@ package org.opencb.datastore.mongodb;
 
 import com.google.common.collect.Lists;
 import com.mongodb.*;
+
+import java.io.IOException;
 import java.util.*;
 import org.opencb.datastore.core.ComplexTypeConverter;
 import org.opencb.datastore.core.QueryOptions;
 import org.opencb.datastore.core.QueryResult;
+import org.opencb.datastore.core.QueryResultWriter;
 
 /**
  * @author Ignacio Medina &lt;imedina@ebi.ac.uk&gt;
@@ -18,10 +21,12 @@ public class MongoDBCollection {
     private MongoDBNativeQuery mongoDBNativeQuery;
     private long start;
     private long end;
+    private QueryResultWriter<DBObject> queryResultWriter;
 
     MongoDBCollection(DBCollection dbCollection) {
         this.dbCollection = dbCollection;
         mongoDBNativeQuery = new MongoDBNativeQuery(dbCollection);
+        queryResultWriter = null;
     }
 
 
@@ -88,8 +93,22 @@ public class MongoDBCollection {
         BasicDBList list = new BasicDBList();
         
         if (cursor != null) {
-            while (cursor.hasNext()) {
-                list.add(cursor.next());
+            if (queryResultWriter != null) {
+                try {
+                    queryResultWriter.open();
+                    while (cursor.hasNext()) {
+                        queryResultWriter.write(cursor.next());
+                    }
+                    queryResultWriter.close();
+                } catch (IOException e) {
+                    queryResult = endQuery(list, converter);
+                    queryResult.setErrorMsg(e.getMessage() + " " + Arrays.toString(e.getStackTrace()));
+                    return queryResult;
+                }
+            } else {
+                while (cursor.hasNext()) {
+                    list.add(cursor.next());
+                }
             }
             
             if (options != null && options.getInt("limit") > 0) {
@@ -106,11 +125,32 @@ public class MongoDBCollection {
         return queryResult;
     }
 
-    public QueryResult aggregate(Object id, List<DBObject> operations, QueryOptions options) {
+    public QueryResult<DBObject> aggregate(Object id, List<DBObject> operations, QueryOptions options) {
         startQuery();
-        QueryResult queryResult = new QueryResult();
+        QueryResult<DBObject> queryResult;
         AggregationOutput output = mongoDBNativeQuery.aggregate(id, operations, options);
-        queryResult.setResult(Lists.newArrayList(output.results()));
+        Iterator<DBObject> iterator = output.results().iterator();
+        List<DBObject> list = new LinkedList<>();
+        if (queryResultWriter != null) {
+            try {
+                queryResultWriter.open();
+                while (iterator.hasNext()) {
+                    queryResultWriter.write(iterator.next());
+                }
+                queryResultWriter.close();
+            } catch (IOException e) {
+                queryResult = endQuery(list, null);
+                queryResult.setErrorMsg(e.getMessage() + " " + Arrays.toString(e.getStackTrace()));
+                return queryResult;
+            }
+        } else {
+            while (iterator.hasNext()) {
+                list.add(iterator.next());
+            }
+        }
+
+        queryResult = endQuery(list, null);
+        queryResult.setResult(list);
         queryResult.setNumTotalResults(queryResult.getNumResults());
         return queryResult;
     }
@@ -135,6 +175,13 @@ public class MongoDBCollection {
         return queryResult;
     }
 
+    public QueryResultWriter<DBObject> getQueryResultWriter() {
+        return queryResultWriter;
+    }
+
+    public void setQueryResultWriter(QueryResultWriter<DBObject> queryResultWriter) {
+        this.queryResultWriter = queryResultWriter;
+    }
 
     /**
      * Create a new Native instance.  This is a convenience method, equivalent to {@code new MongoClientOptions.Native()}.
