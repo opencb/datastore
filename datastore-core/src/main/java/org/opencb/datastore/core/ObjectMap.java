@@ -74,7 +74,7 @@ public class ObjectMap implements Map<String, Object>, Serializable {
 
     public String getString(String field, String defaultValue) {
         if(field != null && objectMap.containsKey(field)) {
-            return (String) objectMap.get(field);
+            return objectMap.get(field).toString();
         }
         return defaultValue;
     }
@@ -90,12 +90,39 @@ public class ObjectMap implements Map<String, Object>, Serializable {
             switch(obj.getClass().getSimpleName()) {
                 case "Integer":
                     return (Integer)obj;
+                case "Long":
+                    return ((Long)obj).intValue();
                 case "Double":
                     return ((Double)obj).intValue();
                 case "Float":
                     return ((Float)obj).intValue();
                 case "String":
                     return Integer.parseInt(String.valueOf(obj));
+                default:
+                    return defaultValue;
+            }
+        }
+        return defaultValue;
+    }
+
+    public long getLong(String field) {
+        return getLong(field, 0L);
+    }
+
+    public long getLong(String field, long defaultValue) {
+        if(field != null && objectMap.containsKey(field)) {
+            Object obj = objectMap.get(field);
+            switch(obj.getClass().getSimpleName()) {
+                case "Long":
+                    return (Long)obj;
+                case "Integer":
+                    return ((Integer)obj).longValue();
+                case "Double":
+                    return ((Double)obj).longValue();
+                case "Float":
+                    return ((Float)obj).longValue();
+                case "String":
+                    return Long.parseLong(String.valueOf(obj));
                 default:
                     return defaultValue;
             }
@@ -118,6 +145,8 @@ public class ObjectMap implements Map<String, Object>, Serializable {
                     return ((Double)obj).floatValue();
                 case "Integer":
                     return ((Integer)obj).floatValue();
+                case "Long":
+                    return ((Long)obj).floatValue();
                 case "String":
                     return Float.parseFloat((String) objectMap.get(field));
                 default:
@@ -142,6 +171,8 @@ public class ObjectMap implements Map<String, Object>, Serializable {
                     return ((Float)obj).doubleValue();
                 case "Integer":
                     return ((Integer)obj).doubleValue();
+                case "Long":
+                    return ((Long)obj).doubleValue();
                 case "String":
                     return Double.parseDouble((String) objectMap.get(field));
                 default:

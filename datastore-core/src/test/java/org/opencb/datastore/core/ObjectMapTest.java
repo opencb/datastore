@@ -23,6 +23,7 @@ public class ObjectMapTest {
         objectMap = new ObjectMap();
         objectMap.put("string", "hello");
         objectMap.put("integer", 1);
+        objectMap.put("long", 123_456_789_000L);
         objectMap.put("boolean", true);
         objectMap.put("float", 1.0f);
         objectMap.put("double", 1.0);
@@ -58,11 +59,17 @@ public class ObjectMapTest {
     @Test
     public void testGetString() throws Exception {
         assertEquals(objectMap.getString("string"), "hello");
+        assertEquals(objectMap.getString("integer"), "1");
     }
 
     @Test
     public void testGetInt() throws Exception {
+        assertEquals(objectMap.getInt("integer"), 1);
+    }
 
+    @Test
+    public void testGetLong() throws Exception {
+        assertEquals(objectMap.getLong("long"), 123_456_789_000L);
     }
 
     @Test
