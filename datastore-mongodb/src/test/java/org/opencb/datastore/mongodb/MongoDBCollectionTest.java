@@ -9,6 +9,7 @@ import com.mongodb.DBObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opencb.datastore.core.ComplexTypeConverter;
 import org.opencb.datastore.core.QueryResult;
 import org.opencb.datastore.core.QueryResultWriter;
 
@@ -71,16 +72,14 @@ public class MongoDBCollectionTest {
 
         BasicQueryResultWriter queryResultWriter = new BasicQueryResultWriter();
         mongoDBCollectionTest.setQueryResultWriter(queryResultWriter);
-        QueryResult<DBObject> dbObjectQueryResult = mongoDBCollectionTest.find(new BasicDBObject("id", new BasicDBObject("$gt", 50)), null, null);
+        QueryResult<DBObject> dbObjectQueryResult = mongoDBCollectionTest.find(new BasicDBObject("id", new BasicDBObject("$gt", 50)), null);
         System.out.println(dbObjectQueryResult);
         assert (dbObjectQueryResult.getResult().isEmpty());
 
         mongoDBCollectionTest.setQueryResultWriter(null);
-        dbObjectQueryResult = mongoDBCollectionTest.find(new BasicDBObject("id", new BasicDBObject("$gt", 50)), null, null);
+        dbObjectQueryResult = mongoDBCollectionTest.find(new BasicDBObject("id", new BasicDBObject("$gt", 50)), null);
         System.out.println(dbObjectQueryResult);
         assert (!dbObjectQueryResult.getResult().isEmpty());
-
-        mongoDataStore.dropCollection("test");
 
     }
 
@@ -92,6 +91,20 @@ public class MongoDBCollectionTest {
 
     @Test
     public void testDistinct() throws Exception {
+        QueryResult<Integer> id1 = mongoDBCollectionTest.distinct("id", null);
+        QueryResult<Integer> id2 = mongoDBCollectionTest.distinct("id", new ComplexTypeConverter<Integer, Object>() {
+            @Override
+            public Integer convertToDataModelType(Object object) {
+                if(object instanceof Integer) {
+                    return (Integer) object;
+                } else {
+                    System.out.println("Non integer result : " + object);
+                    return 0;
+                }
+            }
+            @Override
+            public Object convertToStorageType(Integer object) { return null; }
+        });
 //        System.out.println(mongoDBCollection.distinct("name", null).getNumResults());
 //        System.out.println(mongoDBCollection.nativeQuery().distinct("name"));
     }
