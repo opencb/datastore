@@ -77,6 +77,26 @@ class MongoDBNativeQuery {
         return dbCollection.update(object, updates, upsert, multi);
     }
 
+    public WriteResult remove(DBObject query) {
+        return dbCollection.remove(query);
+    }
+
+    public DBObject findAndModify(DBObject query, DBObject fields, DBObject sort, DBObject update, QueryOptions options) {
+        boolean remove = false;
+        boolean returnNew = false;
+        boolean upsert = false;
+
+        if(options != null) {
+            if(fields == null) {
+                fields = getReturnFields(options);
+            }
+            remove = options.getBoolean("remove", false);
+            upsert = options.getBoolean("upsert", false);
+            returnNew = options.getBoolean("returnNew", false);
+        }
+        return dbCollection.findAndModify(query, fields, sort, remove, update, returnNew, upsert);
+    }
+
     private BasicDBObject getReturnFields(QueryOptions options) {
         // Select which fields are excluded and included in the query
         BasicDBObject returnFields = new BasicDBObject("_id", 0);

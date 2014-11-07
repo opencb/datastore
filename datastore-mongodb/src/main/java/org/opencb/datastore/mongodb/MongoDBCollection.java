@@ -184,6 +184,30 @@ public class MongoDBCollection {
         return queryResult;
     }
 
+    public QueryResult<WriteResult> remove(DBObject query) {
+        startQuery();
+        WriteResult wr = mongoDBNativeQuery.remove(query);
+        QueryResult<WriteResult> queryResult = endQuery(Arrays.asList(wr), null);
+        if (!wr.getLastError().ok()) {
+            queryResult.setErrorMsg(wr.getLastError().getErrorMessage());
+        }
+        return queryResult;
+    }
+
+    public <T> QueryResult<T> findAndModify(DBObject query, DBObject update, QueryOptions options,
+                                            ComplexTypeConverter<T, DBObject> converter) {
+        return findAndModify(query, null, null, update, options, converter);
+    }
+
+    public <T> QueryResult<T> findAndModify(DBObject query, DBObject fields, DBObject sort, DBObject update,
+                                            QueryOptions options, ComplexTypeConverter<T, DBObject> converter) {
+        startQuery();
+        DBObject result = mongoDBNativeQuery.findAndModify(query, fields, sort, update, options);
+        QueryResult<T> queryResult = endQuery(Arrays.asList(result), converter);
+
+        return queryResult;
+    }
+
     public QueryResultWriter<DBObject> getQueryResultWriter() {
         return queryResultWriter;
     }
