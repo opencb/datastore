@@ -97,6 +97,18 @@ class MongoDBNativeQuery {
         return dbCollection.findAndModify(query, fields, sort, remove, update, returnNew, upsert);
     }
 
+    public void createIndex(DBObject keys, DBObject options) {
+        dbCollection.createIndex(keys, options);
+    }
+
+    public List<DBObject> getIndex() {
+        return dbCollection.getIndexInfo();
+    }
+
+    public void dropIndex(DBObject keys) {
+        dbCollection.dropIndex(keys);
+    }
+
     private BasicDBObject getReturnFields(QueryOptions options) {
         // Select which fields are excluded and included in the query
         BasicDBObject returnFields = new BasicDBObject("_id", 0);

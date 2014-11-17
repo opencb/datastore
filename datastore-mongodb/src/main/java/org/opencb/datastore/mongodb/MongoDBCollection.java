@@ -208,6 +208,29 @@ public class MongoDBCollection {
         return queryResult;
     }
 
+    public QueryResult createIndex(DBObject keys, DBObject options) {
+        startQuery();
+        mongoDBNativeQuery.createIndex(keys, options);
+        QueryResult queryResult = endQuery(Collections.emptyList(), null);
+        return queryResult;
+    }
+
+    public QueryResult dropIndex(DBObject keys) {
+        startQuery();
+        mongoDBNativeQuery.dropIndex(keys);
+        QueryResult queryResult = endQuery(Collections.emptyList(), null);
+        return queryResult;
+    }
+
+    public QueryResult<DBObject> getIndex() {
+        startQuery();
+        List<DBObject> index = mongoDBNativeQuery.getIndex();
+        QueryResult<DBObject> queryResult = endQuery(index, null);
+        return queryResult;
+    }
+
+
+
     public QueryResultWriter<DBObject> getQueryResultWriter() {
         return queryResultWriter;
     }
