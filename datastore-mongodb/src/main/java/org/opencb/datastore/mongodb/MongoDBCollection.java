@@ -199,6 +199,11 @@ public class MongoDBCollection {
         return findAndModify(query, null, null, update, options, converter);
     }
 
+    public QueryResult<DBObject> findAndModify(DBObject query, DBObject fields, DBObject sort,
+                                               DBObject update, QueryOptions options) {
+        return findAndModify(query, fields, sort, update, options, null);
+    }
+
     public <T> QueryResult<T> findAndModify(DBObject query, DBObject fields, DBObject sort, DBObject update,
                                             QueryOptions options, ComplexTypeConverter<T, DBObject> converter) {
         startQuery();
