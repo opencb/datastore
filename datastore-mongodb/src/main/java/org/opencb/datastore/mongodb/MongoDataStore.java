@@ -18,14 +18,11 @@ import org.slf4j.LoggerFactory;
 
 public class MongoDataStore {
 
-    private static Map<String, MongoDBCollection> mongoDBCollections = new HashMap<>();
+    private Map<String, MongoDBCollection> mongoDBCollections = new HashMap<>();
 
     private MongoClient mongoClient;
     private DB db;
     private MongoDBConfiguration mongoDBConfiguration;
-
-    @Deprecated
-    private String database;
 
     protected Logger logger = LoggerFactory.getLogger(MongoDataStore.class);
 
@@ -33,13 +30,6 @@ public class MongoDataStore {
         this.mongoClient = mongoClient;
         this.db = db;
         this.mongoDBConfiguration = mongoDBConfiguration;
-        this.database = db.getName();
-        init();
-    }
-
-    @Deprecated
-    private void init() {
-        logger = LoggerFactory.getLogger(MongoDataStore.class);
     }
 
     public boolean test() {
@@ -59,7 +49,6 @@ public class MongoDataStore {
 
     public MongoDBCollection createCollection(String collectionName) {
         if(!db.getCollectionNames().contains(collectionName)) {
-//            db.createCollection(collectionName, new BasicDBObject("capped", false));
             db.createCollection(collectionName, null);
         }
         return getCollection(collectionName);
