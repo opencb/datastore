@@ -8,7 +8,7 @@ import org.opencb.datastore.core.QueryOptions;
 /**
  * Created by imedina on 28/03/14.
  */
-class MongoDBNativeQuery {
+public class MongoDBNativeQuery {
 
     private final DBCollection dbCollection;
 
