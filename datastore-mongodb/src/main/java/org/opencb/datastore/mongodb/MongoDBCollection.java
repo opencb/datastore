@@ -61,7 +61,6 @@ public class MongoDBCollection {
     public QueryResult<Long> count() {
         startQuery();
         long l = mongoDBNativeQuery.count();
-        System.out.println(dbCollection.getStats());
         return endQuery(Arrays.asList(l), null);
     }
 
