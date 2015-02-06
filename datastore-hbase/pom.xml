@@ -5,15 +5,21 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>datastore</artifactId>
         <groupId>org.opencb.datastore</groupId>
-        <version>0.3.0</version>
+        <artifactId>datastore</artifactId>
+        <version>0.3-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
     <artifactId>datastore-hbase</artifactId>
+    <version>${datastore.version}</version>
 
     <dependencies>
+        <dependency>
+            <groupId>org.opencb.datastore</groupId>
+            <artifactId>datastore-core</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-common</artifactId>
@@ -22,33 +28,6 @@
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-client</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.opencb.datastore</groupId>
-            <artifactId>datastore-core</artifactId>
-            <type>jar</type>
-        </dependency>
     </dependencies>
 
-    <build>
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-            </testResource>
-        </testResources>
-        
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                        <testExcludes>
-                            <exclude>**/TestHortonSandbox.java</exclude>
-                        </testExcludes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

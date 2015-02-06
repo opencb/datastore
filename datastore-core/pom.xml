@@ -5,13 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>datastore</artifactId>
         <groupId>org.opencb.datastore</groupId>
-        <version>0.3.0</version>
+        <artifactId>datastore</artifactId>
+        <version>0.3-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
     <artifactId>datastore-core</artifactId>
+    <version>${datastore.version}</version>
 
     <dependencies>
         <dependency>

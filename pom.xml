@@ -6,7 +6,7 @@
 
     <groupId>org.opencb.datastore</groupId>
     <artifactId>datastore</artifactId>
-    <version>0.3.0</version>
+    <version>0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>OpenCB datastore project</name>
@@ -20,7 +20,7 @@
     </modules>
 
     <properties>
-        <opencb.datastore.version>0.3.0</opencb.datastore.version>
+        <datastore.version>0.3-SNAPSHOT</datastore.version>
         <compileSource>1.7</compileSource>
     </properties>
 
@@ -63,19 +63,18 @@
             <dependency>
                 <groupId>org.opencb.datastore</groupId>
                 <artifactId>datastore-core</artifactId>
-                <version>${opencb.datastore.version}</version>
+                <version>${datastore.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.opencb.datastore</groupId>
                 <artifactId>datastore-mongodb</artifactId>
-                <version>${opencb.datastore.version}</version>
+                <version>${datastore.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.mongodb</groupId>
                 <artifactId>mongo-java-driver</artifactId>
-                <version>2.12.4</version>
-                <!--<version>2.11.4</version>-->
+                <version>2.13.0</version>
                 <optional>true</optional>
             </dependency>
             <dependency>
@@ -90,11 +89,10 @@
                 <version>0.98.1-hadoop2</version>
                 <optional>true</optional>
             </dependency>
-
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>16.0.1</version>
+                <version>18.0</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -114,12 +112,12 @@
             <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
-                <version>2.5.0</version>
+                <version>2.6.1</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.11</version>
+                <version>4.12</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -130,7 +128,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.2</version>
                 <configuration>
                     <source>${compileSource}</source>
                     <target>${compileSource}</target>
@@ -142,7 +140,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>2.6</version>
+                <version>2.7</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
@@ -150,7 +148,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>2.3</version>
+                <version>2.4</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -163,7 +161,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
+                <version>2.10.1</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
