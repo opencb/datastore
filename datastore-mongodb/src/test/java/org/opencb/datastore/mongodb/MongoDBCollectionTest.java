@@ -255,15 +255,25 @@ public class MongoDBCollectionTest {
                 return null;
             }
         }, queryOptions);
-        assertNotNull("Object queryResult cannot be null", queryResultList);
-        assertNotNull("Object queryResult.get(0) cannot be null", queryResultList.get(0).getResult());
+        assertNotNull("Object queryResultList cannot be null", queryResultList);
+        assertNotNull("Object queryResultList.get(0) cannot be null", queryResultList.get(0).getResult());
         assertTrue("Returned field must instance of Hashmap", queryResultList.get(0).first() instanceof HashMap);
         assertEquals("resultType must 'java.util.HashMap'", "java.util.HashMap", queryResultList.get(0).getResultType());
     }
 
     @Test
     public void testAggregate() throws Exception {
+        List<DBObject> dbObjectList = new ArrayList<>();
+        DBObject match = new BasicDBObject("$match", new BasicDBObject("age", new BasicDBObject("$gt", 2)));
+        DBObject group = new BasicDBObject("$group", new BasicDBObject("_id", "$age"));
 
+        dbObjectList.add(match);
+        dbObjectList.add(group);
+
+        QueryResult queryResult = mongoDBCollection.aggregate(dbObjectList, null);
+        assertNotNull("Object queryResult cannot be null", queryResult);
+        assertNotNull("Object queryResult.getResult() cannot be null", queryResult.getResult());
+        assertEquals("There must be 2 results", 2, queryResult.getResult().size());
     }
 
     @Test

@@ -248,10 +248,7 @@ public class MongoDBCollection {
                 list.add(iterator.next());
             }
         }
-
         queryResult = endQuery(list);
-        queryResult.setResult(list);
-        queryResult.setNumTotalResults(queryResult.getNumResults());
         return queryResult;
     }
 
