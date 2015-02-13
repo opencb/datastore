@@ -113,18 +113,32 @@ public class MongoDBCollectionTest {
     @Test
     public void testDistinct1() throws Exception {
         QueryResult<Object> queryResult = mongoDBCollection.distinct("age", null);
-        System.out.println("queryResult = " + queryResult);
+        assertNotNull("Object cannot be null", queryResult);
+        assertEquals("ResultType must be 'java.lang.Integer'", "java.lang.Integer", queryResult.getResultType());
     }
 
     @Test
     public void testDistinct2() throws Exception {
         QueryResult<String> queryResult = mongoDBCollection.distinct("name", null, String.class);
-        System.out.println("queryResult = " + queryResult);
+        assertNotNull("Object cannot be null", queryResult);
+        assertEquals("ResultType must be 'java.lang.String'", "java.lang.String", queryResult.getResultType());
     }
 
     @Test
     public void testDistinct3() throws Exception {
+        QueryResult<Integer> queryResult = mongoDBCollection.distinct("age", null, new ComplexTypeConverter<Integer, Object>() {
+            @Override
+            public Integer convertToDataModelType(Object object) {
+                return Integer.parseInt(object.toString());
+            }
 
+            @Override
+            public Object convertToStorageType(Integer object) {
+                return null;
+            }
+        });
+        assertNotNull("Object cannot be null", queryResult);
+        assertEquals("ResultType must be 'java.lang.Integer'", "java.lang.Integer", queryResult.getResultType());
     }
 
     @Test
