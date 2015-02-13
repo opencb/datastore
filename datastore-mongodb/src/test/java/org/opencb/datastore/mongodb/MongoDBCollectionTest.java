@@ -112,14 +112,14 @@ public class MongoDBCollectionTest {
 
     @Test
     public void testDistinct1() throws Exception {
-        QueryResult<Object> queryResult = mongoDBCollection.distinct("id", null);
-//        System.out.println("queryResult = " + queryResult);
+        QueryResult<Object> queryResult = mongoDBCollection.distinct("age", null);
+        System.out.println("queryResult = " + queryResult);
     }
 
     @Test
     public void testDistinct2() throws Exception {
-        QueryResult<HashMap> queryResult = mongoDBCollection.distinct("id", null, HashMap.class);
-//        System.out.println("queryResult = " + queryResult);
+        QueryResult<String> queryResult = mongoDBCollection.distinct("name", null, String.class);
+        System.out.println("queryResult = " + queryResult);
     }
 
     @Test
