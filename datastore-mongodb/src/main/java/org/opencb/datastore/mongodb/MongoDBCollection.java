@@ -220,10 +220,10 @@ public class MongoDBCollection {
     }
 
 
-    public QueryResult<DBObject> aggregate(Object id, List<DBObject> operations, QueryOptions options) {
+    public QueryResult<DBObject> aggregate(List<DBObject> operations, QueryOptions options) {
         startQuery();
         QueryResult<DBObject> queryResult;
-        AggregationOutput output = mongoDBNativeQuery.aggregate(id, operations, options);
+        AggregationOutput output = mongoDBNativeQuery.aggregate(operations, options);
         Iterator<DBObject> iterator = output.results().iterator();
         List<DBObject> list = new LinkedList<>();
         if (queryResultWriter != null) {

@@ -65,7 +65,7 @@ public class MongoDBNativeQuery {
         return cursor;
     }
 
-    public AggregationOutput aggregate(Object id, List<DBObject> operations, QueryOptions options) {
+    public AggregationOutput aggregate(List<DBObject> operations, QueryOptions options) {
         return (operations.size() > 0) ? dbCollection.aggregate(operations) : null;
     }
 
