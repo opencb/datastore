@@ -7,17 +7,21 @@ import java.util.List;
  * Created by imedina on 20/03/14.
  */
 public class QueryResult<T> {
+
     private String id;
-    @Deprecated private int time;
+    @Deprecated
+    private int time;
     private int dbTime;
     private int numResults;
-    private int numTotalResults;
+    private long numTotalResults;
     private String warningMsg;
     private String errorMsg;
-    @Deprecated private String featureType;
-    private String resultType;
-    private List<T> result;
+    @Deprecated
+    private String featureType;
 
+    private String resultType;
+    public Class<T> clazz;
+    private List<T> result;
 
     public QueryResult() {
         this("", -1, -1, -1, "", "", new ArrayList<T>());
@@ -36,6 +40,27 @@ public class QueryResult<T> {
         this.errorMsg = errorMsg;
         this.resultType = result.size() > 0 ? result.get(0).getClass().getCanonicalName() : "";
         this.result = result;
+    }
+
+    public T first() {
+        if(result != null && result.size() > 0) {
+            return result.get(0);
+        }
+        return null;
+    }
+
+
+    @Override
+    public String toString() {
+        return "QueryResult{\n" +
+                "id='" + id + '\'' + "\n" +
+                ", dbTime=" + dbTime + "\n" +
+                ", numResults=" + numResults + "\n" +
+                ", warningMsg='" + warningMsg + '\'' + "\n" +
+                ", errorMsg='" + errorMsg + '\'' + "\n" +
+                ", resultType='" + resultType + '\'' + "\n" +
+                ", result=" + result + "\n" +
+                '}';
     }
 
     public String getId() {
@@ -70,6 +95,14 @@ public class QueryResult<T> {
 
     public void setNumResults(int numResults) {
         this.numResults = numResults;
+    }
+
+    public long getNumTotalResults() {
+        return numTotalResults;
+    }
+
+    public void setNumTotalResults(long numTotalResults) {
+        this.numTotalResults = numTotalResults;
     }
 
     public String getWarningMsg() {
@@ -111,19 +144,21 @@ public class QueryResult<T> {
     }
 
     public void setResult(List<T> result) {
-        if (result.size() > 0) {
-            this.resultType = result.get(0).getClass().getCanonicalName();
-        }
-        this.numResults = result.size();
         this.result = result;
+//        if (result.size() > 0) {
+//            this.resultType = result.get(0).getClass().getCanonicalName();
+//        }
+//        this.numResults = result.size();
     }
 
+    @Deprecated
     public void addResult(T result) {
         this.resultType = result.getClass().getCanonicalName();
         this.result.add(result);
         this.numResults = this.result.size();
     }
 
+    @Deprecated
     public void addAllResults(List<T> result) {
         if (result.size() > 0) {
             this.resultType = result.get(0).getClass().getCanonicalName();
@@ -132,24 +167,4 @@ public class QueryResult<T> {
         this.numResults = this.result.size();
     }
 
-    @Override
-    public String toString() {
-        return "QueryResult{\n" +
-                "id='" + id + '\'' + "\n" +
-                ", dbTime=" + dbTime + "\n" +
-                ", numResults=" + numResults + "\n" +
-                ", warningMsg='" + warningMsg + '\'' + "\n" +
-                ", errorMsg='" + errorMsg + '\'' + "\n" +
-                ", resultType='" + resultType + '\'' + "\n" +
-                ", result=" + result + "\n" +
-                '}';
-    }
-
-    public int getNumTotalResults() {
-        return numTotalResults;
-    }
-
-    public void setNumTotalResults(int numTotalResults) {
-        this.numTotalResults = numTotalResults;
-    }
 }

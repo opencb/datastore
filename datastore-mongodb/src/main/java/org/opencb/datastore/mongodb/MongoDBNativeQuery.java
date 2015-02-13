@@ -69,12 +69,21 @@ public class MongoDBNativeQuery {
         return (operations.size() > 0) ? dbCollection.aggregate(operations) : null;
     }
 
-    public WriteResult insert(DBObject... objects) {
+    public WriteResult insert(DBObject objects, QueryOptions options) {
         return dbCollection.insert(objects);
+    }
+
+    public WriteResult insert(List<DBObject> dbObjects, QueryOptions options) {
+        return dbCollection.insert(dbObjects);
     }
 
     public WriteResult update(DBObject object, DBObject updates, boolean upsert, boolean multi) {
         return dbCollection.update(object, updates, upsert, multi);
+    }
+
+    // TODO This method must be implemented with Bulk
+    public WriteResult update(List<DBObject> dbObjects, List<DBObject> updates, boolean upsert, boolean multi) {
+        return null;
     }
 
     public WriteResult remove(DBObject query) {
@@ -91,8 +100,8 @@ public class MongoDBNativeQuery {
                 fields = getReturnFields(options);
             }
             remove = options.getBoolean("remove", false);
-            upsert = options.getBoolean("upsert", false);
             returnNew = options.getBoolean("returnNew", false);
+            upsert = options.getBoolean("upsert", false);
         }
         return dbCollection.findAndModify(query, fields, sort, remove, update, returnNew, upsert);
     }

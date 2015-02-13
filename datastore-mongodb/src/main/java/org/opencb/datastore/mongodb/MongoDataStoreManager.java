@@ -135,7 +135,46 @@ public class MongoDataStoreManager {
         }
         return mongoDataStore;
     }
-    
+
+    public void drop(String database) {
+        MongoClient mc = null;
+        if(database != null && !database.trim().equals("")) {
+            try {
+//                MongoClientOptions mongoClientOptions = new MongoClientOptions.Builder()
+//                        .connectionsPerHost(mongoDBConfiguration.getInt("connectionsPerHost", 100))
+//                        .connectTimeout(mongoDBConfiguration.getInt("connectTimeout", 10000))
+//                        .build();
+
+                if(dataStoreServerAddresses.size() == 1) {
+                    mc = new MongoClient(new ServerAddress(dataStoreServerAddresses.get(0).getHost(), dataStoreServerAddresses.get(0).getPort()));
+                } else {
+                    List<ServerAddress> serverAddresses = new ArrayList<>(dataStoreServerAddresses.size());
+                    for(ServerAddress serverAddress: serverAddresses) {
+                        serverAddresses.add(new ServerAddress(serverAddress.getHost(), serverAddress.getPort()));
+                    }
+                    mc = new MongoClient(serverAddresses);
+                }
+
+//                logger.debug(mongoDBConfiguration.toString());
+                DB db = mc.getDB(database);
+//                String user = mongoDBConfiguration.getString("username", "");
+//                String pass = mongoDBConfiguration.getString("password", "");
+//                if((user != null && !user.equals("")) || (pass != null && !pass.equals(""))) {
+//                    db.authenticate(user, pass.toCharArray());
+//                }
+                db.dropDatabase();
+
+                long t1 = System.currentTimeMillis();
+                logger.debug("MongoDataStoreManager: remove MongoDataStore object for database");
+                mongoDataStores.remove(database);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+        } else {
+            logger.debug("MongoDB database is null or empty");
+        }
+    }
+
     public void close(String database) {
         if(mongoDataStores.containsKey(database)) {
             mongoDataStores.get(database).close();
