@@ -3,10 +3,7 @@ package org.opencb.datastore.mongodb;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -54,6 +51,7 @@ public class MongoDBCollectionTest {
             dbObject = new BasicDBObject("id", i);
             dbObject.put("name", "John");
             dbObject.put("surname", "Doe");
+            dbObject.put("age", i % 5);
             mongoDBCollection.nativeQuery().insert(dbObject, null);
         }
         return mongoDBCollection;
@@ -206,16 +204,47 @@ public class MongoDBCollectionTest {
         assertEquals("List must contain 10 results", 10, queryResultList.size());
         assertNotNull("Object cannot be null", queryResultList.get(0).getResult());
         assertNull("Field 'name' must not exist", queryResultList.get(0).first().get("name"));
+        assertEquals("resultType must be 'com.mongodb.BasicDBObject'", "com.mongodb.BasicDBObject", queryResultList.get(0).getResultType());
     }
 
     @Test
     public void testFind6() throws Exception {
-
+        List<DBObject> dbObjectList = new ArrayList<>(10);
+        for (int i = 0; i < 10; i++) {
+            dbObjectList.add(new BasicDBObject("id", i));
+        }
+        DBObject returnFields = new BasicDBObject("id", 1);
+        QueryOptions queryOptions = new QueryOptions("exclude", Arrays.asList("id"));
+        List<QueryResult<HashMap>> queryResultList = mongoDBCollection.find(dbObjectList, returnFields, HashMap.class, queryOptions);
+        assertNotNull("Object queryResultList cannot be null", queryResultList);
+        assertNotNull("Object queryResultList.get(0) cannot be null", queryResultList.get(0).getResult());
+        assertTrue("Returned field must instance of HashMap", queryResultList.get(0).first() instanceof HashMap);
+        assertEquals("resultType must 'java.util.HashMap'", "java.util.HashMap", queryResultList.get(0).getResultType());
     }
 
     @Test
     public void testFind7() throws Exception {
+        final List<DBObject> dbObjectList = new ArrayList<>(10);
+        for (int i = 0; i < 10; i++) {
+            dbObjectList.add(new BasicDBObject("id", i));
+        }
+        DBObject returnFields = new BasicDBObject("id", 1);
+        QueryOptions queryOptions = new QueryOptions("exclude", Arrays.asList("id"));
+        List<QueryResult<HashMap>> queryResultList = mongoDBCollection.find(dbObjectList, returnFields, new ComplexTypeConverter<HashMap, DBObject>() {
+            @Override
+            public HashMap convertToDataModelType(DBObject object) {
+                return new HashMap(object.toMap());
+            }
 
+            @Override
+            public DBObject convertToStorageType(HashMap object) {
+                return null;
+            }
+        }, queryOptions);
+        assertNotNull("Object queryResult cannot be null", queryResultList);
+        assertNotNull("Object queryResult.get(0) cannot be null", queryResultList.get(0).getResult());
+        assertTrue("Returned field must instance of Hashmap", queryResultList.get(0).first() instanceof HashMap);
+        assertEquals("resultType must 'java.util.HashMap'", "java.util.HashMap", queryResultList.get(0).getResultType());
     }
 
     @Test
