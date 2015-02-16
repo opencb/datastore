@@ -4,12 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by imedina on 24/03/14.
@@ -31,6 +29,7 @@ public class ObjectMapTest {
         list.add("elem1");
         list.add("elem2");
         objectMap.put("list", list);
+        objectMap.put("listCsv", "1,2,3,4,5");
         Map<String, Object> map = new HashMap<>();
         map.put("key", "value");
         objectMap.put("map", map);
@@ -99,6 +98,25 @@ public class ObjectMapTest {
         List<String> list = objectMap.getListAs("list", String.class);
         System.out.println(list);
         System.out.println(list.get(0));
+    }
+
+    @Test
+    public void testGetAsList() throws Exception {
+        List<String> list = objectMap.getAsStringList("list");
+        assertEquals(list, objectMap.get("list"));
+        assertEquals(list, objectMap.getAsList("list"));
+
+        list = objectMap.getAsStringList("listCsv", ":");
+        assertEquals(list.get(0), objectMap.getString("listCsv"));
+
+        list = objectMap.getAsStringList("listCsv");
+        assertEquals(list, Arrays.asList("1", "2", "3", "4", "5"));
+
+        List<Integer> listCsv = objectMap.getAsIntegerList("listCsv");
+        assertEquals(listCsv, Arrays.asList(1, 2, 3, 4, 5));
+
+        list = objectMap.getAsStringList("unExisting");
+        assertTrue(list.isEmpty());
     }
 
     @Test

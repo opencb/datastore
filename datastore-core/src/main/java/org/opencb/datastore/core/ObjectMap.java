@@ -302,6 +302,60 @@ public class ObjectMap implements Map<String, Object>, Serializable {
     }
 
 
+    public List<String> getAsStringList(String field) {
+        return getAsStringList(field, ",");
+    }
+    public List<String> getAsStringList(String field, String separator) {
+        List list = getAsList(field, separator);
+        if (!list.isEmpty() && list.get(0) instanceof String) {
+            return ((List<String>) list);
+        } else {
+            List<String> stringList = new ArrayList<>(list.size());
+            for (Object o : list) {
+                stringList.add(o == null? null : o.toString());
+            }
+            return stringList;
+        }
+    }
+
+    public List<Integer> getAsIntegerList(String field) {
+        return getAsIntegerList(field, ",");
+    }
+
+    public List<Integer> getAsIntegerList(String field, String separator) {
+        List list = getAsList(field, separator);
+        if (!list.isEmpty() && list.get(0) instanceof Integer) {
+            return ((List<Integer>) list);
+        } else {
+            List<Integer> integerList = new ArrayList<>(list.size());
+            for (Object o : list) {
+                int i;
+                if (o instanceof Integer) {
+                    i = (int) o;
+                } else {
+                    i = Integer.parseInt(o.toString());
+                }
+                integerList.add(i);
+            }
+            return integerList;
+        }
+    }
+
+    public List<Object> getAsList(String field) {
+        return getAsList(field, ",");
+    }
+
+    public List<Object> getAsList(String field, String separator) {
+        Object value = get(field);
+        if (value instanceof List) {
+            return (List) value;
+        } else if (value == null) {
+            return Collections.emptyList();
+        } else {
+            return Arrays.<Object>asList(value.toString().split(separator));
+        }
+    }
+
     /**
      * Map methods implementation. Side effect of composition.
      */
