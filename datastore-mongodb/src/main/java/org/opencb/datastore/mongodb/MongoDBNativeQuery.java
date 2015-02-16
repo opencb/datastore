@@ -39,13 +39,13 @@ public class MongoDBNativeQuery {
         return find(query, null, options);
     }
 
-    public DBCursor find(DBObject query, DBObject returnFields, QueryOptions options) {
+    public DBCursor find(DBObject query, DBObject projection, QueryOptions options) {
         DBCursor cursor;
 
-        if(returnFields == null) {
-            returnFields = getReturnFields(options);
+        if(projection == null) {
+            projection = getProjection(projection, options);
         }
-        cursor = dbCollection.find(query, returnFields);
+        cursor = dbCollection.find(query, projection);
 
         int limit = (options != null) ? options.getInt("limit", 0) : 0;
         if (limit > 0) {
@@ -90,20 +90,20 @@ public class MongoDBNativeQuery {
         return dbCollection.remove(query);
     }
 
-    public DBObject findAndModify(DBObject query, DBObject fields, DBObject sort, DBObject update, QueryOptions options) {
+    public DBObject findAndModify(DBObject query, DBObject projection, DBObject sort, DBObject update, QueryOptions options) {
         boolean remove = false;
         boolean returnNew = false;
         boolean upsert = false;
 
         if(options != null) {
-            if(fields == null) {
-                fields = getReturnFields(options);
+            if(projection == null) {
+                projection = getProjection(projection, options);
             }
             remove = options.getBoolean("remove", false);
             returnNew = options.getBoolean("returnNew", false);
             upsert = options.getBoolean("upsert", false);
         }
-        return dbCollection.findAndModify(query, fields, sort, remove, update, returnNew, upsert);
+        return dbCollection.findAndModify(query, projection, sort, remove, update, returnNew, upsert);
     }
 
     public void createIndex(DBObject keys, DBObject options) {
@@ -118,24 +118,32 @@ public class MongoDBNativeQuery {
         dbCollection.dropIndex(keys);
     }
 
-    private BasicDBObject getReturnFields(QueryOptions options) {
+    private DBObject getProjection(DBObject projection, QueryOptions options) {
         // Select which fields are excluded and included in the query
-        BasicDBObject returnFields = new BasicDBObject("_id", 0);
+//      DBObject returnFields = null;
+//      returnFields = new BasicDBObject("_id", 0);
+        if(projection == null) {
+            projection = new BasicDBObject();
+        }
+        projection.put("_id", 0);
+
         if (options != null) {
             // Read and process 'include'/'exclude' field from 'options' object
-            if (options.getList("include") != null && options.getList("include").size() > 0) {
-                for (Object field : options.getList("include")) {
-                    returnFields.put(field.toString(), 1);
+            List<String> includeStringList = options.getAsStringList("include", ",");
+            if (includeStringList != null && includeStringList.size() > 0) {
+                for (Object field : includeStringList) {
+                    projection.put(field.toString(), 1);
                 }
             } else {
-                if (options.getList("exclude") != null && options.getList("exclude").size() > 0) {
-                    for (Object field : options.getList("exclude")) {
-                        returnFields.put(field.toString(), 0);
+                List<String> excludeStringList = options.getAsStringList("include", ",");
+                if (excludeStringList != null && excludeStringList.size() > 0) {
+                    for (Object field : excludeStringList) {
+                        projection.put(field.toString(), 0);
                     }
                 }
             }
         }
-        return returnFields;
+        return projection;
     }
 
 }
