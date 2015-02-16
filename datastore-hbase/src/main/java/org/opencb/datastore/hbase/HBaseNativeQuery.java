@@ -123,12 +123,12 @@ public class HBaseNativeQuery {
         if(options != null) {
             // Read and process 'include'/'exclude' field from 'options' object
             if (options.getList("include") != null) {
-                for (String field : options.getListAs("include", String.class)) {
+                for (String field : options.getAsList("include", String.class)) {
                     String[] parts = field.split(":");
                     get.addColumn(parts[0].getBytes(), parts[1].getBytes());
                 }
             } else if (options.getList("exclude") != null) {
-                for (String field : options.getListAs("exclude", String.class)) {
+                for (String field : options.getAsList("exclude", String.class)) {
                     // TODO Can it be done?
                 }
             }
@@ -141,12 +141,12 @@ public class HBaseNativeQuery {
         if(options != null) {
             // Read and process 'include'/'exclude' field from 'options' object
             if (options.getList("include") != null) {
-                for (String field : options.getListAs("include", String.class)) {
+                for (String field : options.getAsList("include", String.class)) {
                     String[] parts = field.split(":");
                     scan.addColumn(parts[0].getBytes(), parts[1].getBytes());
                 }
             } else if (options.getList("exclude") != null) {
-                for (String field : options.getListAs("exclude", String.class)) {
+                for (String field : options.getAsList("exclude", String.class)) {
                     // TODO Can it be done?
                 }
             }

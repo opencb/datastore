@@ -95,7 +95,7 @@ public class ObjectMapTest {
 
     @Test
     public void testGetListAs() throws Exception {
-        List<String> list = objectMap.getListAs("list", String.class);
+        List<String> list = objectMap.getAsList("list", String.class);
         System.out.println(list);
         System.out.println(list.get(0));
     }

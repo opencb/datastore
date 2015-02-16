@@ -247,64 +247,10 @@ public class ObjectMap implements Map<String, Object>, Serializable {
         return defaultValue;
     }
 
-    /**
-     * Some fields can be a List, this method cast the Object to aList of type T. Gets the value of the given key, casting it to the given {@code Class<T>}.  This is useful to avoid having casts
-     * in client code, though the effect is the same.  So to get the value of a key that is of type String, you would write
-     * {@code String name = doc.get("name", String.class)} instead of {@code String name = (String) doc.get("x") }.
-     * @param field
-     * @param clazz
-     * @return A List representation of the field
-     */
-    public <T> List<T> getListAs(String field, final Class<T> clazz) {
-        return getListAs(field, clazz, null);
-    }
-
-    public <T> List<T> getListAs(String field, final Class<T> clazz, List<T> defaultValue) {
-        if(field != null && objectMap.containsKey(field)) {
-            return (List<T>) objectMap.get(field);
-        }
-        return defaultValue;
-    }
-
-
-    /**
-     * Some fields can be also a Map, this method cast the Object to Map
-     * @param field
-     * @return A Map representation of the field
-     */
-    public Map<String, Object> getMap(String field) {
-        return getMap(field, null);
-    }
-
-    public Map<String, Object> getMap(String field, Map<String, Object> defaultValue) {
-        if(field != null && objectMap.containsKey(field)) {
-            return (Map<String, Object>) objectMap.get(field);
-        }
-        return defaultValue;
-    }
-
-    /**
-     * Some fields can be a Map, this method cast the Object to Map of type T. Gets the value of the given key, casting it to the given {@code Class<T>}.  This is useful to avoid having casts
-     * in client code, though the effect is the same.  So to get the value of a key that is of type String, you would write
-     * {@code String name = doc.get("name", String.class)} instead of {@code String name = (String) doc.get("x") }.
-     * @param field
-     * @return A Map representation of the field
-     */
-    public <T> Map<String, T> getMapAs(String field, final Class<T> clazz) {
-        return getMapAs(field, clazz, null);
-    }
-
-    public <T> Map<String, T> getMapAs(String field, final Class<T> clazz, Map<String, T> defaultValue) {
-        if(field != null && objectMap.containsKey(field)) {
-            return (Map<String, T>) objectMap.get(field);
-        }
-        return defaultValue;
-    }
-
-
     public List<String> getAsStringList(String field) {
         return getAsStringList(field, ",");
     }
+
     public List<String> getAsStringList(String field, String separator) {
         List list = getAsList(field, separator);
         if (!list.isEmpty() && list.get(0) instanceof String) {
@@ -321,7 +267,6 @@ public class ObjectMap implements Map<String, Object>, Serializable {
     public List<Integer> getAsIntegerList(String field) {
         return getAsIntegerList(field, ",");
     }
-
     public List<Integer> getAsIntegerList(String field, String separator) {
         List list = getAsList(field, separator);
         if (!list.isEmpty() && list.get(0) instanceof Integer) {
@@ -341,25 +286,86 @@ public class ObjectMap implements Map<String, Object>, Serializable {
         }
     }
 
+    /**
+     * Some fields can be a List, this method cast the Object to aList of type T. Gets the value of the given key, casting it to the given {@code Class<T>}.  This is useful to avoid having casts
+     * in client code, though the effect is the same.  So to get the value of a key that is of type String, you would write
+     * {@code String name = doc.get("name", String.class)} instead of {@code String name = (String) doc.get("x") }.
+     * @param field
+     * @param clazz
+     * @return A List representation of the field
+     */
+    @Deprecated
+    public <T> List<T> getAsList(String field, final Class<T> clazz) {
+        return getAsList(field, clazz, null);
+    }
+
+    @Deprecated
+    public <T> List<T> getAsList(String field, final Class<T> clazz, List<T> defaultValue) {
+        if(field != null && objectMap.containsKey(field)) {
+            return (List<T>) objectMap.get(field);
+        }
+        return defaultValue;
+    }
+
     public List<Object> getAsList(String field) {
         return getAsList(field, ",");
     }
 
     public List<Object> getAsList(String field, String separator) {
         Object value = get(field);
-        if (value instanceof List) {
-            return (List) value;
-        } else if (value == null) {
+        if (value == null) {
             return Collections.emptyList();
         } else {
-            return Arrays.<Object>asList(value.toString().split(separator));
+            if (value instanceof List) {
+                return (List) value;
+            } else {
+                return Arrays.<Object>asList(value.toString().split(separator));
+            }
         }
     }
+
+
+    /**
+     * Some fields can be also a Map, this method cast the Object to Map
+     * @param field
+     * @return A Map representation of the field
+     */
+    public Map<String, Object> getMap(String field) {
+        return getMap(field, null);
+    }
+
+
+    public Map<String, Object> getMap(String field, Map<String, Object> defaultValue) {
+        if(field != null && objectMap.containsKey(field)) {
+            return (Map<String, Object>) objectMap.get(field);
+        }
+        return defaultValue;
+    }
+
+    /**
+     * Some fields can be a Map, this method cast the Object to Map of type T. Gets the value of the given key, casting it to the given {@code Class<T>}.  This is useful to avoid having casts
+     * in client code, though the effect is the same.  So to get the value of a key that is of type String, you would write
+     * {@code String name = doc.get("name", String.class)} instead of {@code String name = (String) doc.get("x") }.
+     * @param field
+     * @return A Map representation of the field
+     */
+    @Deprecated
+    public <T> Map<String, T> getMapAs(String field, final Class<T> clazz) {
+        return getMapAs(field, clazz, null);
+    }
+
+    @Deprecated
+    public <T> Map<String, T> getMapAs(String field, final Class<T> clazz, Map<String, T> defaultValue) {
+        if(field != null && objectMap.containsKey(field)) {
+            return (Map<String, T>) objectMap.get(field);
+        }
+        return defaultValue;
+    }
+
 
     /**
      * Map methods implementation. Side effect of composition.
      */
-
     @Override
     public int size() {
         return objectMap.size();
