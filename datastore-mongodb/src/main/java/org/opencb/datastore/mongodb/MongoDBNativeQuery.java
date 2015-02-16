@@ -135,7 +135,7 @@ public class MongoDBNativeQuery {
                     projection.put(field.toString(), 1);
                 }
             } else {
-                List<String> excludeStringList = options.getAsStringList("include", ",");
+                List<String> excludeStringList = options.getAsStringList("exclude", ",");
                 if (excludeStringList != null && excludeStringList.size() > 0) {
                     for (Object field : excludeStringList) {
                         projection.put(field.toString(), 0);
