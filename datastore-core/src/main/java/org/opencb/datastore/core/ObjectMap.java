@@ -180,20 +180,21 @@ public class ObjectMap implements Map<String, Object>, Serializable {
      * @param field   the field
      * @param clazz the class to cast the value to
      * @param <T>   the type of the class
-     * @return the value of the given key, or null if the instance does not contain this key.
-     * @throws ClassCastException if the value of the given key is not of type T
+     * @return the value of the given key, or null if the instance does not contain this key, or defaultValue if the object
+     * is not of type T.
      */
-    @SuppressWarnings("unchecked")
-    public <T> T get(final Object field, final Class<T> clazz) {
-        return (T) objectMap.get(field);
+    public <T> T get(final String field, final Class<T> clazz) {
+        return get(field, clazz, null);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T get(final Object field, final Class<T> clazz, T defaultvalue) {
+    public <T> T get(final String field, final Class<T> clazz, T defaultValue) {
         if(objectMap.containsKey(field)) {
-            return (T) objectMap.get(field);
+            Object obj = objectMap.get(field);
+            if (clazz.isInstance(obj)) {
+                return clazz.cast(obj);
+            }
         }
-        return defaultvalue;
+        return defaultValue;
     }
 
     /**
@@ -232,6 +233,7 @@ public class ObjectMap implements Map<String, Object>, Serializable {
     public List<Integer> getAsIntegerList(String field) {
         return getAsIntegerList(field, ",");
     }
+
     public List<Integer> getAsIntegerList(String field, String separator) {
         List list = getAsList(field, separator);
         if (!list.isEmpty() && list.get(0) instanceof Integer) {
