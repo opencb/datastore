@@ -20,6 +20,8 @@ public class ObjectMapTest {
     public void setUp() throws Exception {
         objectMap = new ObjectMap();
         objectMap.put("string", "hello");
+        objectMap.put("stringInteger", "1");
+        objectMap.put("stringFloat", "1.0");
         objectMap.put("integer", 1);
         objectMap.put("long", 123_456_789_000L);
         objectMap.put("boolean", true);
@@ -64,21 +66,40 @@ public class ObjectMapTest {
     @Test
     public void testGetInt() throws Exception {
         assertEquals(objectMap.getInt("integer"), 1);
+        assertEquals(objectMap.getInt("float"), 1);
+        assertEquals(objectMap.getInt("double"), 1);
+        assertEquals(objectMap.getInt("stringInteger"), 1);
+
+        assertEquals(objectMap.getInt("stringFloat", 25), 25);
     }
 
     @Test
     public void testGetLong() throws Exception {
         assertEquals(objectMap.getLong("long"), 123_456_789_000L);
+        assertEquals(objectMap.getLong("integer"), 1l);
+        assertEquals(objectMap.getLong("float"), 1l);
+        assertEquals(objectMap.getLong("double"), 1l);
+        assertEquals(objectMap.getLong("stringInteger"), 1l);
+
+        assertEquals(objectMap.getLong("stringFloat", 25), 25);
     }
 
     @Test
     public void testGetFloat() throws Exception {
-
+        assertEquals(objectMap.getFloat("integer"), 1.0f, 0.0);
+        assertEquals(objectMap.getFloat("float"), 1.0f, 0.0);
+        assertEquals(objectMap.getFloat("double"), 1.0f, 0.0);
+        assertEquals(objectMap.getFloat("stringInteger"), 1.0f, 0.0);
+        assertEquals(objectMap.getFloat("stringFloat"), 1.0f, 0.0);
     }
 
     @Test
     public void testGetDouble() throws Exception {
-
+        assertEquals(objectMap.getDouble("integer"), 1.0d, 0.0);
+        assertEquals(objectMap.getDouble("float"), 1.0d, 0.0);
+        assertEquals(objectMap.getDouble("double"), 1.0d, 0.0);
+        assertEquals(objectMap.getDouble("stringInteger"), 1.0d, 0.0);
+        assertEquals(objectMap.getDouble("stringFloat"), 1.0d, 0.0);
     }
 
     @Test

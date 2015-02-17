@@ -74,11 +74,7 @@ public class ObjectMap implements Map<String, Object>, Serializable {
 
     public String getString(String field, String defaultValue) {
         if(field != null && objectMap.containsKey(field)) {
-            if(objectMap.get(field) != null) {
-                return objectMap.get(field).toString();
-            }else {
-                return null;
-            }
+            return String.valueOf(objectMap.get(field));
         }
         return defaultValue;
     }
@@ -91,19 +87,12 @@ public class ObjectMap implements Map<String, Object>, Serializable {
     public int getInt(String field, int defaultValue) {
         if(field != null && objectMap.containsKey(field)) {
             Object obj = objectMap.get(field);
-            switch(obj.getClass().getSimpleName()) {
-                case "Integer":
-                    return (Integer)obj;
-                case "Long":
-                    return ((Long)obj).intValue();
-                case "Double":
-                    return ((Double)obj).intValue();
-                case "Float":
-                    return ((Float)obj).intValue();
-                case "String":
-                    return Integer.parseInt(String.valueOf(obj));
-                default:
-                    return defaultValue;
+            if (obj instanceof Number) {
+                return ((Number) obj).intValue();
+            } else if (obj instanceof String) {
+                try {
+                    return Integer.parseInt((String) obj);
+                } catch (NumberFormatException ignored) { }
             }
         }
         return defaultValue;
@@ -116,19 +105,12 @@ public class ObjectMap implements Map<String, Object>, Serializable {
     public long getLong(String field, long defaultValue) {
         if(field != null && objectMap.containsKey(field)) {
             Object obj = objectMap.get(field);
-            switch(obj.getClass().getSimpleName()) {
-                case "Long":
-                    return (Long)obj;
-                case "Integer":
-                    return ((Integer)obj).longValue();
-                case "Double":
-                    return ((Double)obj).longValue();
-                case "Float":
-                    return ((Float)obj).longValue();
-                case "String":
-                    return Long.parseLong(String.valueOf(obj));
-                default:
-                    return defaultValue;
+            if (obj instanceof Number) {
+                return ((Number) obj).longValue();
+            } else if (obj instanceof String) {
+                try {
+                    return Long.parseLong((String) obj);
+                } catch (NumberFormatException ignored) { }
             }
         }
         return defaultValue;
@@ -142,19 +124,12 @@ public class ObjectMap implements Map<String, Object>, Serializable {
     public float getFloat(String field, float defaultValue) {
         if(field != null && objectMap.containsKey(field)) {
             Object obj = objectMap.get(field);
-            switch(obj.getClass().getSimpleName()) {
-                case "Float":
-                    return (Float)obj;
-                case "Double":
-                    return ((Double)obj).floatValue();
-                case "Integer":
-                    return ((Integer)obj).floatValue();
-                case "Long":
-                    return ((Long)obj).floatValue();
-                case "String":
-                    return Float.parseFloat((String) objectMap.get(field));
-                default:
-                    return defaultValue;
+            if (obj instanceof Number) {
+                return ((Number) obj).floatValue();
+            } else if (obj instanceof String) {
+                try {
+                    return Float.parseFloat((String) obj);
+                } catch (NumberFormatException ignored) { }
             }
         }
         return defaultValue;
@@ -168,19 +143,12 @@ public class ObjectMap implements Map<String, Object>, Serializable {
     public double getDouble(String field, double defaultValue) {
         if(field != null && objectMap.containsKey(field)) {
             Object obj = objectMap.get(field);
-            switch(obj.getClass().getSimpleName()) {
-                case "Double":
-                    return (Double)obj;
-                case "Float":
-                    return ((Float)obj).doubleValue();
-                case "Integer":
-                    return ((Integer)obj).doubleValue();
-                case "Long":
-                    return ((Long)obj).doubleValue();
-                case "String":
-                    return Double.parseDouble((String) objectMap.get(field));
-                default:
-                    return defaultValue;
+            if (obj instanceof Number) {
+                return ((Number) obj).doubleValue();
+            } else if (obj instanceof String) {
+                try {
+                    return Double.parseDouble((String) obj);
+                } catch (NumberFormatException ignored) { }
             }
         }
         return defaultValue;
@@ -194,13 +162,10 @@ public class ObjectMap implements Map<String, Object>, Serializable {
     public boolean getBoolean(String field, boolean defaultValue) {
         if(field != null && objectMap.containsKey(field)) {
             Object obj = objectMap.get(field);
-            switch(obj.getClass().getSimpleName()) {
-                case "Boolean":
-                    return (Boolean) objectMap.get(field);
-                case "String":
-                    return Boolean.parseBoolean((String) objectMap.get(field));
-                default:
-                    return defaultValue;
+            if (obj instanceof Boolean) {
+                return ((Boolean) obj);
+            } else if (obj instanceof String) {
+                return Boolean.parseBoolean((String) objectMap.get(field));
             }
         }
         return defaultValue;
