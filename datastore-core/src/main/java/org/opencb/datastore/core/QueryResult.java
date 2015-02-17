@@ -1,6 +1,7 @@
 package org.opencb.datastore.core;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -31,7 +32,7 @@ public class QueryResult<T> {
         this(id, -1, -1, -1, "", "", new ArrayList<T>());
     }
 
-    public QueryResult(String id, int dbTime, int numResults, int numTotalResults, String warningMsg, String errorMsg, List<T> result) {
+    public QueryResult(String id, int dbTime, int numResults, long numTotalResults, String warningMsg, String errorMsg, List<T> result) {
         this.id = id;
         this.dbTime = dbTime;
         this.numResults = numResults;

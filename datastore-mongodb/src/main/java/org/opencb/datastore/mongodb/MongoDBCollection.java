@@ -98,7 +98,7 @@ public class MongoDBCollection {
         return endQuery(l);
     }
 
-    public <T, O> QueryResult<T> distinct(String key, DBObject query, ComplexTypeConverter<T, O> converter) {
+    public <T, O> QueryResult<T> distinct(String key, DBObject query, ComplexTypeConverter< T, O> converter) {
         startQuery();
         List<O> distinct = mongoDBNativeQuery.distinct(key, query);
 
@@ -253,7 +253,6 @@ public class MongoDBCollection {
     }
 
 
-
     public QueryResult<WriteResult> insert(DBObject object, QueryOptions options) {
         startQuery();
         WriteResult wr = mongoDBNativeQuery.insert(object, options);
@@ -264,16 +263,13 @@ public class MongoDBCollection {
         return queryResult;
     }
 
-    public QueryResult<WriteResult> insert(List<DBObject> dbObjects, QueryOptions options) {
+    //Bulk insert
+    public QueryResult<BulkWriteResult> insert(List<DBObject> objects, QueryOptions options) {
         startQuery();
-        WriteResult wr = mongoDBNativeQuery.insert(dbObjects, options);
-        QueryResult<WriteResult> queryResult = endQuery(Arrays.asList(wr));
-        if (!wr.getLastError().ok()) {
-            queryResult.setErrorMsg(wr.getLastError().getErrorMessage());
-        }
+        BulkWriteResult writeResult = mongoDBNativeQuery.insert(objects, options);
+        QueryResult<BulkWriteResult> queryResult = endQuery(Collections.singletonList(writeResult));
         return queryResult;
     }
-
 
 
     public QueryResult<WriteResult> update(DBObject query, DBObject update, QueryOptions options) {
@@ -294,7 +290,8 @@ public class MongoDBCollection {
         return queryResult;
     }
 
-    public QueryResult<WriteResult> update(List<DBObject> queries, List<DBObject> updates, QueryOptions options) {
+    //Bulk update
+    public QueryResult<BulkWriteResult> update(List<DBObject> queries, List<DBObject> updates, QueryOptions options) {
         startQuery();
 
         boolean upsert = false;
@@ -304,14 +301,10 @@ public class MongoDBCollection {
             multi = options.getBoolean("multi");
         }
 
-        WriteResult wr = mongoDBNativeQuery.update(queries, updates, upsert, multi);
-        QueryResult<WriteResult> queryResult = endQuery(Arrays.asList(wr));
-        if (!wr.getLastError().ok()) {
-            queryResult.setErrorMsg(wr.getLastError().getErrorMessage());
-        }
+        BulkWriteResult wr = mongoDBNativeQuery.update(queries, updates, upsert, multi);
+        QueryResult<BulkWriteResult> queryResult = endQuery(Arrays.asList(wr));
         return queryResult;
     }
-
 
 
     public QueryResult<WriteResult> remove(DBObject query, QueryOptions options) {
@@ -321,6 +314,20 @@ public class MongoDBCollection {
         if (!wr.getLastError().ok()) {
             queryResult.setErrorMsg(wr.getLastError().getErrorMessage());
         }
+        return queryResult;
+    }
+
+    //Bulk remove
+    public QueryResult<BulkWriteResult> remove(List<DBObject> query, QueryOptions options) {
+        startQuery();
+
+        boolean multi = false;
+        if(options != null) {
+            multi = options.getBoolean("multi");
+        }
+        BulkWriteResult wr = mongoDBNativeQuery.remove(query, multi);
+        QueryResult<BulkWriteResult> queryResult = endQuery(Arrays.asList(wr));
+
         return queryResult;
     }
 

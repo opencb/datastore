@@ -1,7 +1,11 @@
 package org.opencb.datastore.mongodb;
 
 import com.mongodb.*;
+
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import org.opencb.datastore.core.QueryOptions;
 
 
@@ -73,21 +77,60 @@ public class MongoDBNativeQuery {
         return dbCollection.insert(objects);
     }
 
-    public WriteResult insert(List<DBObject> dbObjects, QueryOptions options) {
-        return dbCollection.insert(dbObjects);
+    public BulkWriteResult insert(List<DBObject> objects, QueryOptions options) {
+        BulkWriteOperation bulk = dbCollection.initializeUnorderedBulkOperation();
+        for (DBObject document : objects) {
+            bulk.insert(document);
+        }
+
+        return bulk.execute();
     }
 
     public WriteResult update(DBObject object, DBObject updates, boolean upsert, boolean multi) {
         return dbCollection.update(object, updates, upsert, multi);
     }
 
-    // TODO This method must be implemented with Bulk
-    public WriteResult update(List<DBObject> dbObjects, List<DBObject> updates, boolean upsert, boolean multi) {
-        return null;
+    public BulkWriteResult update(List<DBObject> queryList, List<DBObject> updatesList, boolean upsert, boolean multi) {
+        if (queryList.size() != updatesList.size()) {
+            throw new IndexOutOfBoundsException("QueryList.size and UpdatesList must be the same size");
+        }
+
+        BulkWriteOperation bulk = dbCollection.initializeUnorderedBulkOperation();
+        Iterator<DBObject> queryIterator = queryList.iterator();
+        Iterator<DBObject> updateIterator = updatesList.iterator();
+
+        while (queryIterator.hasNext()) {
+            DBObject query = queryIterator.next();
+            DBObject update = updateIterator.next();
+
+            BulkWriteRequestBuilder builder = bulk.find(query);
+            if (upsert) {
+                builder.upsert();
+            }
+            if (multi) {
+                builder.update(update);
+            } else {
+                builder.updateOne(update);
+            }
+        }
+        return bulk.execute();
     }
 
     public WriteResult remove(DBObject query) {
         return dbCollection.remove(query);
+    }
+
+    public BulkWriteResult remove(List<DBObject> queryList, boolean multi) {
+        BulkWriteOperation bulk = dbCollection.initializeUnorderedBulkOperation();
+        for (DBObject query : queryList) {
+            BulkWriteRequestBuilder builder = bulk.find(query);
+            if (multi) {
+                builder.remove();
+            } else {
+                builder.removeOne();
+            }
+        }
+        return bulk.execute();
     }
 
     public DBObject findAndModify(DBObject query, DBObject projection, DBObject sort, DBObject update, QueryOptions options) {
