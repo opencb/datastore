@@ -5,9 +5,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import com.mongodb.*;
 import org.junit.*;
+import org.junit.rules.ExpectedException;
 import org.opencb.datastore.core.ComplexTypeConverter;
 import org.opencb.datastore.core.QueryOptions;
 import org.opencb.datastore.core.QueryResult;
@@ -24,9 +24,13 @@ public class MongoDBCollectionTest {
     private static MongoDataStore mongoDataStore;
     private static MongoDBCollection mongoDBCollection;
     private static MongoDBCollection mongoDBCollectionInsertTest;
+    private static MongoDBCollection mongoDBCollectionUpdateTest;
     private static MongoDBCollection mongoDBCollectionRemoveTest;
 
     private static int N = 1000;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -35,6 +39,7 @@ public class MongoDBCollectionTest {
 
         mongoDBCollection = createTestCollection("test", N);
         mongoDBCollectionInsertTest = createTestCollection("insert_test", 50);
+        mongoDBCollectionUpdateTest = createTestCollection("update_test", 50);
         mongoDBCollectionRemoveTest = createTestCollection("remove_test", 50);
     }
 
@@ -46,7 +51,7 @@ public class MongoDBCollectionTest {
 
     private static MongoDBCollection createTestCollection(String test, int size) {
         MongoDBCollection mongoDBCollection = mongoDataStore.getCollection(test);
-        DBObject dbObject = new BasicDBObject();
+        DBObject dbObject;
         for(int i = 0; i < size; i++) {
             dbObject = new BasicDBObject("id", i);
             dbObject.put("name", "John");
@@ -278,27 +283,135 @@ public class MongoDBCollectionTest {
 
     @Test
     public void testInsert() throws Exception {
-
+        Long countBefore = mongoDBCollectionInsertTest.count().first();
+        for (int i = 1; i < 50; i++) {
+            mongoDBCollectionInsertTest.insert(new BasicDBObject("insertedObject", i), null);
+            assertEquals("Insert operation must insert 1 element each time.", countBefore + i, mongoDBCollectionInsertTest.count().first().longValue()  );
+        }
     }
 
     @Test
     public void testInsert1() throws Exception {
+        BasicDBObject uniqueObject = new BasicDBObject("_id", "myUniqueId");
+        mongoDBCollectionInsertTest.insert(uniqueObject, null);
 
+        thrown.expect(DuplicateKeyException.class);
+        mongoDBCollectionInsertTest.insert(uniqueObject, null);
+    }
+
+    @Test
+    public void testInsert2() throws Exception {
+        Long countBefore = mongoDBCollectionInsertTest.count().first();
+        int numBulkInsertions = 50;
+        int bulkInsertSize = 100;
+
+        for (int b = 1; b < numBulkInsertions; b++) {
+            ArrayList<DBObject> list = new ArrayList<>(bulkInsertSize);
+            for (int i = 0; i < bulkInsertSize; i++) {
+                list.add(new BasicDBObject("bulkInsertedObject", i));
+            }
+            mongoDBCollectionInsertTest.insert(list, null);
+            assertEquals("Bulk insert operation must insert " + bulkInsertSize + " elements each time.", countBefore + bulkInsertSize * b, mongoDBCollectionInsertTest.count().first().longValue());
+        }
+    }
+
+    @Test
+    public void testInsert3() throws Exception {
+        BasicDBObject uniqueObject = new BasicDBObject("_id", "myUniqueId");
+
+        ArrayList<DBObject> list = new ArrayList<>(10);
+        for (int i = 0; i < 10; i++) {
+            list.add(uniqueObject);
+        }
+
+        thrown.expect(BulkWriteException.class);
+        mongoDBCollectionInsertTest.insert(list, null);
     }
 
     @Test
     public void testUpdate() throws Exception {
-
+        BasicDBObject query = new BasicDBObject("name", "John");
+        long count = mongoDBCollectionUpdateTest.count(query).first();
+        WriteResult writeResult = mongoDBCollectionUpdateTest.update(query,
+                new BasicDBObject("$set", new BasicDBObject("modified", true)),
+                new QueryOptions("multi", true)
+        ).first();
+        assertEquals("All the objects are named \"John\", so all objects should be modified", count, writeResult.getN());
     }
 
     @Test
     public void testUpdate1() throws Exception {
+        WriteResult writeResult = mongoDBCollectionUpdateTest.update(new BasicDBObject("surname", "Johnson"),
+                new BasicDBObject("$set", new BasicDBObject("modifiedAgain", true)),
+                new QueryOptions("multi", true)
+        ).first();
+        assertEquals("Any objects have the surname \"Johnson\", so any objects should be modified", 0, writeResult.getN());
+    }
 
+    @Test
+    public void testUpdate2() throws Exception {
+        WriteResult writeResult = mongoDBCollectionUpdateTest.update(new BasicDBObject("surname", "Johnson"),
+                new BasicDBObject("$set", new BasicDBObject("modifiedAgain", true)),
+                new QueryOptions("upsert", true)
+        ).first();
+        assertEquals("Any objects have the surname \"Johnson\", so one object should be inserted", 1, writeResult.getN());
+    }
+
+    @Test
+    public void testUpdate3() throws Exception {
+        int count = mongoDBCollectionUpdateTest.count().first().intValue();
+        int modifiedDocuments = count / 2;
+        ArrayList<DBObject> queries = new ArrayList<>(modifiedDocuments);
+        ArrayList<DBObject> updates = new ArrayList<>(modifiedDocuments);
+
+        for (int i = 0; i < modifiedDocuments; i++) {
+            queries.add(new BasicDBObject("id", i));
+            updates.add(new BasicDBObject("$set", new BasicDBObject("bulkUpdated", i)));
+        }
+        BulkWriteResult bulkWriteResult = mongoDBCollectionUpdateTest.update(queries, updates, new QueryOptions("multi", false)).first();
+        assertEquals("", modifiedDocuments, bulkWriteResult.getModifiedCount());
+    }
+
+    @Test
+    public void testUpdate4() throws Exception {
+        int count = mongoDBCollectionUpdateTest.count().first().intValue();
+        int modifiedDocuments = count / 2;
+        ArrayList<DBObject> queries = new ArrayList<>(modifiedDocuments);
+        ArrayList<DBObject> updates = new ArrayList<>(modifiedDocuments);
+
+        for (int i = 0; i < modifiedDocuments; i++) {
+            queries.add(new BasicDBObject("id", i));
+            updates.add(new BasicDBObject("$set", new BasicDBObject("bulkUpdated", i)));
+        }
+        updates.remove(updates.size()-1);
+
+        thrown.expect(IndexOutOfBoundsException.class);
+        mongoDBCollectionUpdateTest.update(queries, updates, new QueryOptions("multi", false));
     }
 
     @Test
     public void testRemove() throws Exception {
+        int count = mongoDBCollectionRemoveTest.count().first().intValue();
+        BasicDBObject query = new BasicDBObject("age", 1);
+        int numDeletions = mongoDBCollectionRemoveTest.count(query).first().intValue();
+        WriteResult writeResult = mongoDBCollectionRemoveTest.remove(query, null).first();
+        assertEquals(numDeletions, writeResult.getN());
+        assertEquals(mongoDBCollectionRemoveTest.count().first().intValue(), count - numDeletions);
+    }
 
+    @Test
+    public void testRemove1() throws Exception {
+        int count = mongoDBCollectionRemoveTest.count().first().intValue();
+
+        int numDeletions = 10;
+        List<DBObject> remove = new ArrayList<>(numDeletions);
+        for (int i = 0; i < numDeletions; i++) {
+            remove.add(new BasicDBObject("name", "John"));
+        }
+
+        BulkWriteResult bulkWriteResult = mongoDBCollectionRemoveTest.remove(remove, null).first();
+        assertEquals(numDeletions, bulkWriteResult.getRemovedCount());
+        assertEquals(mongoDBCollectionRemoveTest.count().first().intValue(), count - numDeletions);
     }
 
     @Test
