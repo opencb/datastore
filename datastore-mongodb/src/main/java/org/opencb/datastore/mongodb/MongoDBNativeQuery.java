@@ -29,7 +29,7 @@ public class MongoDBNativeQuery {
         long result = dbCollection.count(query);
         return result;
     }
-    
+
     public List distinct(String key) {
         return distinct(key, null);
     }
@@ -55,7 +55,7 @@ public class MongoDBNativeQuery {
         if (limit > 0) {
             cursor.limit(limit);
         }
-        
+
         int skip = (options != null) ? options.getInt("skip", 0) : 0;
         if (skip > 0) {
             cursor.skip(skip);
@@ -65,7 +65,7 @@ public class MongoDBNativeQuery {
         if (sort != null) {
             cursor.sort(sort);
         }
- 
+
         return cursor;
     }
 
@@ -73,17 +73,41 @@ public class MongoDBNativeQuery {
         return (operations.size() > 0) ? dbCollection.aggregate(operations) : null;
     }
 
-    public WriteResult insert(DBObject objects, QueryOptions options) {
-        return dbCollection.insert(objects);
+    /**
+     * This method insert a single document into a collection. Params w and wtimeout are read from QueryOptions.
+     * @param dbObject
+     * @param options
+     * @return
+     */
+    public WriteResult insert(DBObject dbObject, QueryOptions options) {
+        if(options != null && (options.containsKey("w") || options.containsKey("wtimeout"))) {
+            // Some info about params: http://api.mongodb.org/java/current/com/mongodb/WriteConcern.html
+            return dbCollection.insert(dbObject, new WriteConcern(options.getInt("w", 1),
+                    options.getInt("wtimeout", 0)));
+        }else {
+            return dbCollection.insert(dbObject);
+        }
     }
 
-    public BulkWriteResult insert(List<DBObject> objects, QueryOptions options) {
+    /**
+     * This method insert a list of documents into a collection. Params w and wtimeout are read from QueryOptions.
+     * @param dbObjectList
+     * @param options
+     * @return
+     */
+    public BulkWriteResult insert(List<DBObject> dbObjectList, QueryOptions options) {
+        // Let's prepare the Bulk object
         BulkWriteOperation bulk = dbCollection.initializeUnorderedBulkOperation();
-        for (DBObject document : objects) {
+        for (DBObject document : dbObjectList) {
             bulk.insert(document);
         }
 
-        return bulk.execute();
+        if(options != null && (options.containsKey("w") || options.containsKey("wtimeout"))) {
+            // Some info about params: http://api.mongodb.org/java/current/com/mongodb/WriteConcern.html
+            return bulk.execute(new WriteConcern(options.getInt("w", 1), options.getInt("wtimeout", 0)));
+        }else {
+            return bulk.execute();
+        }
     }
 
     public WriteResult update(DBObject object, DBObject updates, boolean upsert, boolean multi) {
