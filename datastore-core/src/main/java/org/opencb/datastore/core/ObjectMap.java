@@ -74,7 +74,11 @@ public class ObjectMap implements Map<String, Object>, Serializable {
 
     public String getString(String field, String defaultValue) {
         if(field != null && objectMap.containsKey(field)) {
-            return String.valueOf(objectMap.get(field));
+            if(objectMap.get(field) != null) {
+                return objectMap.get(field).toString();
+            } else {
+                return null;
+            }
         }
         return defaultValue;
     }
