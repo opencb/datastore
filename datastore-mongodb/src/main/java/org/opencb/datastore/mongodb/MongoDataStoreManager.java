@@ -78,7 +78,7 @@ public class MongoDataStoreManager {
     public MongoDataStore get(String database, MongoDBConfiguration mongoDBConfiguration) {
         if(!mongoDataStores.containsKey(database)) {
             MongoDataStore mongoDataStore = create(database, mongoDBConfiguration);
-            logger.info("MongoDataStoreManager: new MongoDataStore created");
+            logger.debug("MongoDataStoreManager: new MongoDataStore database '{}' created", database);
             mongoDataStores.put(database, mongoDataStore);
         } 
         return mongoDataStores.get(database);
