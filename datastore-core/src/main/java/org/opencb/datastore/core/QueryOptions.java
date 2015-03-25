@@ -1,5 +1,6 @@
 package org.opencb.datastore.core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -68,10 +69,16 @@ public class QueryOptions extends ObjectMap {
      */
     public Object addToListOption(String key, Object value) {
         if (key != null && !key.equals("")) {
-            if (this.containsKey(key) && this.getList(key) != null) {
+            if (this.containsKey(key) && this.get(key) != null) {
+                if (!(this.get(key) instanceof List)) { //If was not a list, getAsList returns an Unmodifiable List.
+                    // Create new modifiable List with the content, and replace.
+                    this.put(key, new ArrayList<>(this.getAsList(key)));
+                }
                 this.getList(key).add(value);
             } else {
-                this.put(key, Arrays.asList(value));
+                List<Object> list = new ArrayList<>();  //New List instead of "Arrays.asList" or "Collections.singletonList" to avoid unmodifiable list.
+                list.add(value);
+                this.put(key, list);
             }
             return this.getList(key);
         }

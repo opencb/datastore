@@ -282,6 +282,14 @@ public class ObjectMap implements Map<String, Object>, Serializable {
         return getAsList(field, ",");
     }
 
+    /**
+     * Get the field as List. If field was not a list, returns an UnmodifiableList.
+     * Do not modify the ObjectMap content.
+     *
+     * @param field
+     * @param separator
+     * @return
+     */
     public List<Object> getAsList(String field, String separator) {
         Object value = get(field);
         if (value == null) {
