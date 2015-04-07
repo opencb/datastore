@@ -42,7 +42,7 @@ public class MongoDataStore {
         if(!mongoDBCollections.containsKey(collection)) {
             MongoDBCollection mongoDBCollection = new MongoDBCollection(db.getCollection(collection));
             mongoDBCollections.put(collection, mongoDBCollection);
-            logger.info("MongoDataStore: new MongoDBCollection created");
+            logger.debug("MongoDataStore: new MongoDB collection '{}' created", collection);
         }
         return mongoDBCollections.get(collection);
     }

@@ -1,6 +1,5 @@
 package org.opencb.datastore.core;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -16,7 +15,7 @@ public class QueryResponse<T>{
     private String error;
 
     private QueryOptions queryOptions;
-    private Collection<T> response;
+    private List<T> response;
 
     public QueryResponse() {
         this(null, null);
@@ -71,11 +70,11 @@ public class QueryResponse<T>{
         this.queryOptions = queryOptions;
     }
 
-    public Collection<T> getResponse() {
+    public List<T> getResponse() {
         return response;
     }
 
-    public void setResponse(Collection<T> response) {
+    public void setResponse(List<T> response) {
         this.response = response;
     }
 }
