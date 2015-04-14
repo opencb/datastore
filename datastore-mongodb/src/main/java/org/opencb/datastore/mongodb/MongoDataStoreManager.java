@@ -121,7 +121,13 @@ public class MongoDataStoreManager {
                 String user = mongoDBConfiguration.getString("username", "");
                 String pass = mongoDBConfiguration.getString("password", "");
                 if((user != null && !user.equals("")) || (pass != null && !pass.equals(""))) {
-                    db.authenticate(user, pass.toCharArray());
+                    final DB authenticationDatabase;
+                    if (mongoDBConfiguration.get("authenticationDatabase") != null) {
+                        authenticationDatabase = mc.getDB(mongoDBConfiguration.getString("authenticationDatabase"));
+                    } else {
+                        authenticationDatabase = db;
+                    }
+                    authenticationDatabase.authenticate(user, pass.toCharArray());
                 }
 
                 long t1 = System.currentTimeMillis();
