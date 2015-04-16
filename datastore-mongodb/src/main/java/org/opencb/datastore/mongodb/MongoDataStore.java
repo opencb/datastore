@@ -55,7 +55,7 @@ public class MongoDataStore {
     }
 
     public void dropCollection(String collectionName) {
-        if(!db.getCollectionNames().contains(collectionName)) {
+        if(db.getCollectionNames().contains(collectionName)) {
             db.getCollection(collectionName).drop();
             mongoDBCollections.remove(collectionName);
         }
