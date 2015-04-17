@@ -105,7 +105,7 @@ public class MongoDataStoreManager {
                     mc = new MongoClient(new ServerAddress(dataStoreServerAddresses.get(0).getHost(), dataStoreServerAddresses.get(0).getPort()), mongoClientOptions);
                 } else {
                     List<ServerAddress> serverAddresses = new ArrayList<>(dataStoreServerAddresses.size());
-                    for(ServerAddress serverAddress: serverAddresses) {
+                    for(DataStoreServerAddress serverAddress: dataStoreServerAddresses) {
                         serverAddresses.add(new ServerAddress(serverAddress.getHost(), serverAddress.getPort()));
                     }
                     mc = new MongoClient(serverAddresses, mongoClientOptions);
