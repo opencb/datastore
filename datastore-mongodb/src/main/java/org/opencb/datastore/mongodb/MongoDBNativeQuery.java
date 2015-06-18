@@ -145,12 +145,17 @@ public class MongoDBNativeQuery {
 
             BulkWriteRequestBuilder builder = bulk.find(query);
             if (upsert) {
-                builder.upsert();
-            }
-            if (multi) {
-                builder.update(update);
+                if (multi) {
+                    builder.upsert().update(update);
+                } else {
+                    builder.upsert().updateOne(update);
+                }
             } else {
-                builder.updateOne(update);
+                if (multi) {
+                    builder.update(update);
+                } else {
+                    builder.updateOne(update);
+                }
             }
         }
         return bulk.execute();
