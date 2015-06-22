@@ -357,6 +357,10 @@ public class ObjectMap implements Map<String, Object>, Serializable {
         return defaultValue;
     }
 
+    public ObjectMap append(String key, Object value) {
+        put(key, value);
+        return this;
+    }
 
     /**
      * Map methods implementation. Side effect of composition.
