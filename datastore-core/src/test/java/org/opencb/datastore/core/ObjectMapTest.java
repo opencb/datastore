@@ -18,7 +18,9 @@ package org.opencb.datastore.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.*;
 
@@ -31,6 +33,9 @@ import static org.junit.Assert.assertTrue;
 public class ObjectMapTest {
 
     private ObjectMap objectMap;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -48,6 +53,7 @@ public class ObjectMapTest {
         list.add("elem2");
         objectMap.put("list", list);
         objectMap.put("listCsv", "1,2,3,4,5");
+        objectMap.put("listCsvBad", "1,2,X,4,5");
         Map<String, Object> map = new HashMap<>();
         map.put("key", "value");
         objectMap.put("map", map);
@@ -150,10 +156,25 @@ public class ObjectMapTest {
         assertEquals(list, Arrays.asList("1", "2", "3", "4", "5"));
 
         List<Integer> listCsv = objectMap.getAsIntegerList("listCsv");
-        assertEquals(listCsv, Arrays.asList(1, 2, 3, 4, 5));
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), listCsv);
+
+        List<Double> listDCsv = objectMap.getAsDoubleList("listCsv");
+        assertEquals(Arrays.asList(1d, 2d, 3d, 4d, 5d), listDCsv);
 
         list = objectMap.getAsStringList("unExisting");
         assertTrue(list.isEmpty());
+    }
+
+    @Test
+    public void getBadList() {
+        thrown.expect(NumberFormatException.class);
+        objectMap.getAsIntegerList("listCsvBad");
+    }
+
+    @Test
+    public void getBadList2() {
+        thrown.expect(NumberFormatException.class);
+        objectMap.getAsDoubleList("listCsvBad");
     }
 
     @Test

@@ -37,7 +37,7 @@
 
     <properties>
         <datastore.version>0.4-SNAPSHOT</datastore.version>
-        <compileSource>1.7</compileSource>
+        <compileSource>1.8</compileSource>
     </properties>
 
     <scm>

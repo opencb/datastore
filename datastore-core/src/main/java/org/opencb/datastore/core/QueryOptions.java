@@ -100,4 +100,9 @@ public class QueryOptions extends ObjectMap {
         }
         return null;
     }
+
+    @Override
+    public QueryOptions append(String key, Object value) {
+        return (QueryOptions) super.append(key, value);
+    }
 }

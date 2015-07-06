@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Created by imedina on 20/03/14.
@@ -249,27 +250,98 @@ public class ObjectMap implements Map<String, Object>, Serializable {
             return stringList;
         }
     }
+//
+//    public List<Integer> getAsIntegerList(String field) {
+//        return getAsIntegerList(field, ",");
+//    }
+//
+//    public List<Integer> getAsIntegerList(String field, String separator) {
+//        List list = getAsList(field, separator);
+//        if (!list.isEmpty() && list.get(0) instanceof Integer) {
+//            return ((List<Integer>) list);
+//        } else {
+//            List<Integer> integerList = new ArrayList<>(list.size());
+//            for (Object o : list) {
+//                int i;
+//                if (o instanceof Integer) {
+//                    i = (int) o;
+//                } else {
+//                    i = Integer.parseInt(o.toString());
+//                }
+//                integerList.add(i);
+//            }
+//            return integerList;
+//        }
+//    }
 
     public List<Integer> getAsIntegerList(String field) {
-        return getAsIntegerList(field, ",");
+        return getAsNumberList(field, Integer.class, Integer::parseInt, ",");
     }
 
     public List<Integer> getAsIntegerList(String field, String separator) {
+        return getAsNumberList(field, Integer.class, Integer::parseInt, separator);
+    }
+
+    public List<Long> getAsLongList(String field) {
+        return getAsNumberList(field, Long.class, Long::parseLong, ",");
+    }
+
+    public List<Long> getAsLongList(String field, String separator) {
+        return getAsNumberList(field, Long.class, Long::parseLong, separator);
+    }
+
+    public List<Double> getAsDoubleList(String field) {
+        return getAsNumberList(field, Double.class, Double::parseDouble, ",");
+    }
+
+    public List<Double> getAsDoubleList(String field, String separator) {
+        return getAsNumberList(field, Double.class, Double::parseDouble, separator);
+    }
+    
+    public List<Short> getAsShortList(String field) {
+        return getAsNumberList(field, Short.class, Short::parseShort, ",");
+    }
+    
+    public List<Short> getAsShortList(String field, String separator) {
+        return getAsNumberList(field, Short.class, Short::parseShort, separator);
+    }
+    
+    public List<Byte> getAsByteList(String field) {
+        return getAsNumberList(field, Byte.class, Byte::parseByte, ",");
+    }
+    
+    public List<Byte> getAsByteList(String field, String separator) {
+        return getAsNumberList(field, Byte.class, Byte::parseByte, separator);
+    }
+    
+    protected <N extends Number> List<N> getAsNumberList(String field, Class<N> clazz, Function<String, N> parser, String separator) {
         List list = getAsList(field, separator);
-        if (!list.isEmpty() && list.get(0) instanceof Integer) {
-            return ((List<Integer>) list);
+
+        if (list.isEmpty()) {
+            List<N> emptyList = Collections.<N>emptyList();
+            put(field, emptyList);
+            return emptyList;
         } else {
-            List<Integer> integerList = new ArrayList<>(list.size());
+            boolean valid = true;
             for (Object o : list) {
-                int i;
-                if (o instanceof Integer) {
-                    i = (int) o;
-                } else {
-                    i = Integer.parseInt(o.toString());
+                if (!clazz.isInstance(o)) {
+                    valid = false;
+                    break;
                 }
-                integerList.add(i);
             }
-            return integerList;
+            if (valid) {
+                return list;
+            } else {
+                List<N> numericList = new ArrayList<>(list.size());
+                for (Object o : list) {
+                    if (clazz.isInstance(o)) {
+                        numericList.add(clazz.cast(o));
+                    } else {
+                        numericList.add(parser.apply(o.toString()));
+                    }
+                }
+                return numericList;
+            }
         }
     }
 
