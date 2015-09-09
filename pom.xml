@@ -60,6 +60,11 @@
             <email>igmecas@gmail.com</email>
         </developer>
         <developer>
+            <id>jcoll</id>
+            <name>Jacobo</name>
+            <email>jacobo167@gmail.com</email>
+        </developer>
+        <developer>
             <id>cyenyxe</id>
             <name>Cristina</name>
             <email>cyenyxe@ebi.ac.uk</email>
@@ -96,13 +101,8 @@
             <dependency>
                 <groupId>org.apache.hbase</groupId>
                 <artifactId>hbase-client</artifactId>
-                <version>1.0.1.1</version>
+                <version>1.0.2</version>
                 <optional>true</optional>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>18.0</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
