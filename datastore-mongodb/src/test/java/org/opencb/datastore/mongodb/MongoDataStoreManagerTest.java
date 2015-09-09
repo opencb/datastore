@@ -42,6 +42,6 @@ public class MongoDataStoreManagerTest {
 
     @Test
     public void testGet() throws Exception {
-        Assert.assertTrue("MongoDB check connection to 'test' database failed", mongoDataStore.test());
+        Assert.assertTrue("MongoDB check connection to 'test' database failed", mongoDataStore.testConnection());
     }
 }

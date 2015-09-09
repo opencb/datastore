@@ -44,7 +44,7 @@ public class MongoDataStoreTest {
 
     @Test
     public void testTest() throws Exception {
-        mongoDataStore.test();
+        mongoDataStore.testConnection();
     }
 
     @Test

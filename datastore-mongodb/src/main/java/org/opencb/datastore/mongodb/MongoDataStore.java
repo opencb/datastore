@@ -48,7 +48,7 @@ public class MongoDataStore {
         this.mongoDBConfiguration = mongoDBConfiguration;
     }
 
-    public boolean test() {
+    public boolean testConnection() {
         CommandResult commandResult = db.getStats();
         return commandResult != null && commandResult.getBoolean("ok");
     }
