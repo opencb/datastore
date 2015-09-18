@@ -18,6 +18,7 @@ package org.opencb.datastore.mongodb;
 
 import com.mongodb.*;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -216,7 +217,7 @@ public class MongoDBNativeQuery {
         projection.put("_id", 0);
 
         if (options != null) {
-            // Read and process 'include'/'exclude' field from 'options' object
+            // Read and process 'include'/'exclude'/'elemMatch' field from 'options' object
             List<String> includeStringList = options.getAsStringList("include", ",");
             if (includeStringList != null && includeStringList.size() > 0) {
                 for (Object field : includeStringList) {
@@ -229,6 +230,11 @@ public class MongoDBNativeQuery {
                         projection.put(field.toString(), 0);
                     }
                 }
+            }
+            BasicDBObject elemMatch  = (BasicDBObject) options.get("elemMatch");
+            if (elemMatch!=null) {
+                String field = (String) elemMatch.keySet().toArray()[0];
+                projection.put(field, elemMatch.get(field));
             }
         }
         return projection;
