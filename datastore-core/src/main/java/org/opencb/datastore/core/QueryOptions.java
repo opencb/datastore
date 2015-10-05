@@ -90,7 +90,13 @@ public class QueryOptions extends ObjectMap {
                     // Create new modifiable List with the content, and replace.
                     this.put(key, new ArrayList<>(this.getAsList(key)));
                 }
-                this.getList(key).add(value);
+                try {
+                    this.getList(key).add(value);
+                } catch (UnsupportedOperationException e) {
+                    List<Object> list = new ArrayList<>(this.getList(key));
+                    list.add(value);
+                    this.put(key, list);
+                }
             } else {
                 List<Object> list = new ArrayList<>();  //New List instead of "Arrays.asList" or "Collections.singletonList" to avoid unmodifiable list.
                 list.add(value);
