@@ -228,7 +228,7 @@ public class MongoDBCollection {
             }
 
             if (options != null && options.getInt("limit") > 0) {
-                queryResult = endQuery(list, cursor.count());
+                queryResult = endQuery(list, options.getBoolean("skipCount") ? -1 : cursor.count());
             } else {
                 queryResult = endQuery(list);
             }
