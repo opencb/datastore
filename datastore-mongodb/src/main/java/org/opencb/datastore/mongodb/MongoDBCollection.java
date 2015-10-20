@@ -22,6 +22,8 @@ import com.mongodb.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+
 import org.opencb.datastore.core.ComplexTypeConverter;
 import org.opencb.datastore.core.QueryOptions;
 import org.opencb.datastore.core.QueryResult;
@@ -32,6 +34,20 @@ import org.opencb.datastore.core.QueryResultWriter;
  * @author Cristina Yenyxe Gonzalez Garcia &lt;cyenyxe@ebi.ac.uk&gt;
  */
 public class MongoDBCollection {
+
+    public static final String INCLUDE = "include";
+    public static final String EXCLUDE = "exclude";
+    public static final String LIMIT = "limit";
+    public static final String SKIP = "skip";
+    public static final String SORT = "sort";
+
+    public static final String TIMEOUT = "timeout";
+    public static final String SKIP_COUNT = "skipCount";
+    public static final String BATCH_SIZE = "batchSize";
+    public static final String ELEM_MATCH = "elemMatch";
+
+    public static final String UPSERT = "upsert";
+    public static final String MULTI = "multi";
 
     private DBCollection dbCollection;
 
@@ -181,11 +197,6 @@ public class MongoDBCollection {
          * Getting the cursor and setting the batchSize from options. Default value set to 20.
          */
         DBCursor cursor = mongoDBNativeQuery.find(query, projection, options);
-        if(options != null && options.containsKey("batchSize")) {
-            cursor.batchSize(options.getInt("batchSize"));
-        }else {
-            cursor.batchSize(20);
-        }
 
         QueryResult<T> queryResult;
         List<T> list = new LinkedList<>();
@@ -227,8 +238,18 @@ public class MongoDBCollection {
                 }
             }
 
-            if (options != null && options.getInt("limit") > 0) {
-                queryResult = endQuery(list, options.getBoolean("skipCount") ? -1 : cursor.count());
+            if (options != null && options.getInt(LIMIT) > 0) {
+                int numTotalResults;
+                if (options.getBoolean(SKIP_COUNT)) {
+                    numTotalResults = -1;
+                } else {
+                    try {
+                        numTotalResults = cursor.maxTime(options.getInt("countTimeout"), TimeUnit.MILLISECONDS).count();
+                    } catch (MongoExecutionTimeoutException e) {
+                        numTotalResults = -1;
+                    }
+                }
+                queryResult = endQuery(list, numTotalResults);
             } else {
                 queryResult = endQuery(list);
             }
@@ -294,8 +315,8 @@ public class MongoDBCollection {
         boolean upsert = false;
         boolean multi = false;
         if(options != null) {
-            upsert = options.getBoolean("upsert");
-            multi = options.getBoolean("multi");
+            upsert = options.getBoolean(UPSERT);
+            multi = options.getBoolean(MULTI);
         }
 
         WriteResult wr = mongoDBNativeQuery.update(query, update, upsert, multi);
@@ -313,8 +334,8 @@ public class MongoDBCollection {
         boolean upsert = false;
         boolean multi = false;
         if(options != null) {
-            upsert = options.getBoolean("upsert");
-            multi = options.getBoolean("multi");
+            upsert = options.getBoolean(UPSERT);
+            multi = options.getBoolean(MULTI);
         }
 
         BulkWriteResult wr = mongoDBNativeQuery.update(queries, updates, upsert, multi);
@@ -339,7 +360,7 @@ public class MongoDBCollection {
 
         boolean multi = false;
         if(options != null) {
-            multi = options.getBoolean("multi");
+            multi = options.getBoolean(MULTI);
         }
         BulkWriteResult wr = mongoDBNativeQuery.remove(query, multi);
         QueryResult<BulkWriteResult> queryResult = endQuery(Arrays.asList(wr));

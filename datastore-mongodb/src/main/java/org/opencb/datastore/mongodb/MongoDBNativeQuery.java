@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.opencb.datastore.core.QueryOptions;
 
@@ -68,19 +69,27 @@ public class MongoDBNativeQuery {
         }
         cursor = dbCollection.find(query, projection);
 
-        int limit = (options != null) ? options.getInt("limit", 0) : 0;
+        int limit = (options != null) ? options.getInt(MongoDBCollection.LIMIT, 0) : 0;
         if (limit > 0) {
             cursor.limit(limit);
         }
 
-        int skip = (options != null) ? options.getInt("skip", 0) : 0;
+        int skip = (options != null) ? options.getInt(MongoDBCollection.SKIP, 0) : 0;
         if (skip > 0) {
             cursor.skip(skip);
         }
 
-        BasicDBObject sort = (options != null) ? (BasicDBObject) options.get("sort") : null;
+        BasicDBObject sort = (options != null) ? (BasicDBObject) options.get(MongoDBCollection.SORT) : null;
         if (sort != null) {
             cursor.sort(sort);
+        }
+
+        if (options != null && options.containsKey(MongoDBCollection.BATCH_SIZE)) {
+            cursor.batchSize(options.getInt(MongoDBCollection.BATCH_SIZE, 20));
+        }
+
+        if (options != null && options.containsKey(MongoDBCollection.TIMEOUT)) {
+            cursor.maxTime(options.getLong(MongoDBCollection.TIMEOUT), TimeUnit.MILLISECONDS);
         }
 
         return cursor;
@@ -218,21 +227,21 @@ public class MongoDBNativeQuery {
 
         if (options != null) {
             // Read and process 'include'/'exclude'/'elemMatch' field from 'options' object
-            List<String> includeStringList = options.getAsStringList("include", ",");
+            List<String> includeStringList = options.getAsStringList(MongoDBCollection.INCLUDE, ",");
             if (includeStringList != null && includeStringList.size() > 0) {
                 for (Object field : includeStringList) {
                     projection.put(field.toString(), 1);
                 }
             } else {
-                List<String> excludeStringList = options.getAsStringList("exclude", ",");
+                List<String> excludeStringList = options.getAsStringList(MongoDBCollection.EXCLUDE, ",");
                 if (excludeStringList != null && excludeStringList.size() > 0) {
                     for (Object field : excludeStringList) {
                         projection.put(field.toString(), 0);
                     }
                 }
             }
-            BasicDBObject elemMatch  = (BasicDBObject) options.get("elemMatch");
-            if (elemMatch!=null) {
+            BasicDBObject elemMatch  = (BasicDBObject) options.get(MongoDBCollection.ELEM_MATCH);
+            if (elemMatch != null) {
                 String field = (String) elemMatch.keySet().toArray()[0];
                 projection.put(field, elemMatch.get(field));
             }
