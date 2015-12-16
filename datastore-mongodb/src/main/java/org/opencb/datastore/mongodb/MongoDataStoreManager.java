@@ -113,7 +113,8 @@ public class MongoDataStoreManager {
                 MongoClientOptions mongoClientOptions;
                 MongoClientOptions.Builder builder = new MongoClientOptions.Builder()
                         .connectionsPerHost(mongoDBConfiguration.getInt("connectionsPerHost", 100))
-                        .connectTimeout(mongoDBConfiguration.getInt("connectTimeout", 10000));
+                        .connectTimeout(mongoDBConfiguration.getInt("connectTimeout", 10000))
+                        .readPreference(ReadPreference.valueOf(mongoDBConfiguration.getString("readPreference", "primary")));
 
                 if (mongoDBConfiguration.getString("replicaSet") != null && !mongoDBConfiguration.getString("replicaSet").isEmpty()) {
                     System.out.println("Setting replicaSet to " + mongoDBConfiguration.getString("replicaSet"));
