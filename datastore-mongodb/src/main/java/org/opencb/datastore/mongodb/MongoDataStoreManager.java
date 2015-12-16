@@ -35,7 +35,7 @@ public class MongoDataStoreManager {
     private static Map<String, MongoDataStore> mongoDataStores = new HashMap<>();
     private List<DataStoreServerAddress> dataStoreServerAddresses;
 
-//    private MongoDBConfiguration mongoDBConfiguration;
+    //    private MongoDBConfiguration mongoDBConfiguration;
     private MongoDBConfiguration.ReadPreference readPreference;
     private String writeConcern;
 
@@ -96,7 +96,7 @@ public class MongoDataStoreManager {
             MongoDataStore mongoDataStore = create(database, mongoDBConfiguration);
             logger.debug("MongoDataStoreManager: new MongoDataStore database '{}' created", database);
             mongoDataStores.put(database, mongoDataStore);
-        } 
+        }
         return mongoDataStores.get(database);
     }
 
@@ -110,13 +110,19 @@ public class MongoDataStoreManager {
             // PRIMARY_DB is selected
 //            String dbPrefix = applicationProperties.getProperty(speciesVersionPrefix + ".DB", "PRIMARY_DB");
             try {
-                MongoClientOptions mongoClientOptions = new MongoClientOptions.Builder()
+                MongoClientOptions mongoClientOptions;
+                MongoClientOptions.Builder builder = new MongoClientOptions.Builder()
                         .connectionsPerHost(mongoDBConfiguration.getInt("connectionsPerHost", 100))
-                        .connectTimeout(mongoDBConfiguration.getInt("connectTimeout", 10000))
-                        .build();
+                        .connectTimeout(mongoDBConfiguration.getInt("connectTimeout", 10000));
+
+                if (mongoDBConfiguration.getString("replicaSet") != null && !mongoDBConfiguration.getString("replicaSet").isEmpty()) {
+                    System.out.println("Setting replicaSet to " + mongoDBConfiguration.getString("replicaSet"));
+                    builder = builder.requiredReplicaSetName(mongoDBConfiguration.getString("replicaSet"));
+                }
+                mongoClientOptions = builder.build();
 
                 assert(dataStoreServerAddresses != null);
-                
+
                 if(dataStoreServerAddresses.size() == 1) {
                     mc = new MongoClient(new ServerAddress(dataStoreServerAddresses.get(0).getHost(), dataStoreServerAddresses.get(0).getPort()), mongoClientOptions);
                 } else {
@@ -126,7 +132,7 @@ public class MongoDataStoreManager {
                     }
                     mc = new MongoClient(serverAddresses, mongoClientOptions);
                 }
-                    
+
 //                mc.setReadPreference(ReadPreference.secondary(new BasicDBObject("dc", "PG")));
 //                mc.setReadPreference(ReadPreference.primary());
 //                System.out.println("Replica Status: "+mc.getReplicaSetStatus());
